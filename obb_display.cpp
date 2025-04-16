@@ -9,10 +9,13 @@
 
 #define WINDOW_WIDTH 2000.f
 #define WINDOW_HEIGHT 1500.f
+#define WINDOW_ASPECT (WINDOW_WIDTH / WINDOW_HEIGHT)
 #define DEBUG_DISTANCE
 #include "OBB.h"
 #include "camera.h" // 包含你的 Camera 类头文件
 #include "RectRect.h"
+#include "SAT.h"
+#include "sample.h"
 
 
 // 回调函数声明
@@ -37,7 +40,7 @@ void drawOBB(const OBB& obb);
 // 绘制坐标系
 void drawCoordinateSystem();
 
-void drawMinDistSegment(const Point& p1, const Point& p2);
+void drawMinDistSegment(const Point& p1, const Point& p2, const Vector& lineColor);
 
 void applyRotate(OBB& obb, const Vector& axis, float angle);
 
@@ -83,10 +86,19 @@ int main() {
 	applyRotate(b, glm::normalize(Vector{ 0,1,3 }), 70);
 
 	std::pair<Point, Point> pointPair;
-	float dSqr = distance(a, b, pointPair);
-	std::cout << "MinDistance: " << sqrt(dSqr) << std::endl;
+	std::pair<Point, Point> pointPair0, pointPair1;
+	float dk = distanceSample(a, b, pointPair);
+	float dSqr0 = distanceRectRect(a, b, pointPair0);
+	float dSqr1 = distanceSAT(a, b, pointPair1);
+	std::cout << "MinDistance Sample: " << dk << std::endl;
 	std::cout << "Point 1: " << pointPair.first.x << ", " << pointPair.first.y << ", " << pointPair.first.z << std::endl;
 	std::cout << "Point 2: " << pointPair.second.x << ", " << pointPair.second.y << ", " << pointPair.second.z << std::endl;
+	std::cout << "MinDistance RectRect: " << sqrt(dSqr0) << std::endl;
+	std::cout << "Point 1: " << pointPair0.first.x << ", " << pointPair0.first.y << ", " << pointPair0.first.z << std::endl;
+	std::cout << "Point 2: " << pointPair0.second.x << ", " << pointPair0.second.y << ", " << pointPair0.second.z << std::endl;
+	std::cout << "MinDistance SAT: " << sqrt(dSqr1) << std::endl;
+	std::cout << "Point 1: " << pointPair1.first.x << ", " << pointPair1.first.y << ", " << pointPair1.first.z << std::endl;
+	std::cout << "Point 2: " << pointPair1.second.x << ", " << pointPair1.second.y << ", " << pointPair1.second.z << std::endl;
 
 	// 渲染循环
 	while (!glfwWindowShouldClose(window)) {
@@ -104,6 +116,8 @@ int main() {
 
 		// 设置投影和视图矩阵
 		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), WINDOW_WIDTH / WINDOW_HEIGHT, 0.1f, 100.0f);
+		//float size{ 10 };
+		//glm::mat4 projection = glm::ortho(-size * WINDOW_ASPECT, size * WINDOW_ASPECT, -size, size, 0.1f, 10000.0f);
 		glm::mat4 view = camera.GetViewMatrix();
 
 		// 应用矩阵
@@ -120,7 +134,9 @@ int main() {
 		drawOBB(a);
 		drawOBB(b);
 
-		drawMinDistSegment(pointPair.first, pointPair.second);
+		drawMinDistSegment(pointPair0.first, pointPair0.second, { 1.0f, 1.0f, 0.0f });
+		drawMinDistSegment(pointPair1.first, pointPair1.second, { 0.0f, 1.0f, 1.0f });
+		drawMinDistSegment(pointPair.first, pointPair.second, { 0.0f, 1.0f, 0.0f });
 
 		// 交换缓冲区和查询事件
 		glfwSwapBuffers(window);
@@ -138,7 +154,7 @@ void drawOBB(const OBB& obb) {
 		vertices[i] = obb.getPoint(i);
 	}
 
-	// 定义OBB的12条边
+	//// 定义OBB的12条边
 	const unsigned int edges[12][2] = {
 		{0, 1}, {1, 3}, {3, 2}, {2, 0}, // 底面
 		{4, 5}, {5, 7}, {7, 6}, {6, 4}, // 顶面
@@ -175,9 +191,9 @@ void drawCoordinateSystem() {
 	glEnd();
 }
 
-void drawMinDistSegment(const Point& p1, const Point& p2) {
+void drawMinDistSegment(const Point& p1, const Point& p2, const Vector& lineColor) {
 	glBegin(GL_LINES);
-	glColor3f(1.0f, 1.0f, 0.0f);
+	glColor3f(lineColor.x, lineColor.y, lineColor.z);
 	glVertex3f(p1.x, p1.y, p1.z);
 	glVertex3f(p2.x, p2.y, p2.z);
 	glEnd();

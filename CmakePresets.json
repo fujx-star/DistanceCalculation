@@ -21,8 +21,7 @@
           "GLFW_BUILD_DOCS": "OFF",
           "TINYGLTF_BUILD_LOADER_EXAMPLE": "OFF",
           "TINYGLTF_HEADER_ONLY": "OFF",
-          "TINYGLTF_INSTALL": "OFF",
-          "CMAKE_TOOLCHAIN_FILE": "E:/mySAT/vcpkg/scripts/buildsystems/vcpkg.cmake"
+          "TINYGLTF_INSTALL": "OFF"
         }
       },
       {

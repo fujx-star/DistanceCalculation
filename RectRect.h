@@ -3,7 +3,7 @@
 #include "Common.h"
 #include <array>
 
-float distance(const OBB& a, const OBB& b, std::pair<Point, Point>& pointPair) {
+float distanceRectRect(const OBB& a, const OBB& b, std::pair<Point, Point>& pointPair) {
 	float sqrDist{ 1000 };
 
 	std::array<Point, 8> aPoints = {
@@ -66,13 +66,14 @@ float distance(const OBB& a, const OBB& b, std::pair<Point, Point>& pointPair) {
 	{
 		for (const auto& face : faces)
 		{
-			float sqrD = distancePointRect(p, aPoints[face[0]], aPoints[face[1]], aPoints[face[2]], pointPair);
+			float sqrD = distancePointRect(p, aPoints[face[0]], aPoints[face[1]], aPoints[face[2]], curPair);
 #ifdef DEBUG_DISTANCE
 			std::cout << sqrt(sqrD) << " --- Point " << cnt << ", Rect[Point" << face[0] << ", Point " << face[1] << ", Point " << face[2] << "]" << std::endl;
 #endif
 			if (sqrD < sqrDist)
 			{
 				sqrDist = sqrD;
+				std::swap(curPair.first, curPair.second);
 				pointPair = curPair;
 			}
 		}

@@ -6,22 +6,40 @@
 #define EPSILON 1E-6
 
 float distancePointRect(const Point& p, const Vector& o, const Vector& a, const Vector& b, std::pair<Point, Point>& pointPair) {
-    // 将点投影到矩形所在平面
-    Vector pa = p - o;
-    float u = dot(pa, a) / dot(a, a); // a方向的投影长度
-    float v = dot(pa, b) / dot(b, b); // b方向的投影长度
+ //   // 将点投影到矩形所在平面
+ //   Vector pa = p - o;
+ //   float u = dot(pa, a) / dot(a, a); // a方向的投影长度
+ //   float v = dot(pa, b) / dot(b, b); // b方向的投影长度
 
-    // 限制u和v在[0, 1]范围内，表示点在矩形内或投影到边界
-    u = std::clamp(u, 0.0f, 1.0f);
-    v = std::clamp(v, 0.0f, 1.0f);
+ //   // 限制u和v在[0, 1]范围内，表示点在矩形内或投影到边界
+ //   u = std::clamp(u, 0.0f, 1.0f);
+ //   v = std::clamp(v, 0.0f, 1.0f);
 
-    // 计算投影点
-    Point closestPoint = o + a * u + b * v;
+ //   // 计算投影点
+ //   Point closestPoint = o + a * u + b * v;
 
-    // 返回点到投影点的距离
-    Vector diff = p - closestPoint;
-	pointPair = { p, closestPoint };
-    return glm::dot(diff, diff);
+ //   // 返回点到投影点的距离
+ //   Vector diff = p - closestPoint;
+	//pointPair = { p, closestPoint };
+ //   return glm::dot(diff, diff);
+    Vector oa = a - o;
+    Vector ob = b - o;
+    Vector normal = glm::normalize(glm::cross(oa, ob));
+    float d = glm::dot(normal, a);
+    float t = (glm::dot(normal, p) - d);
+    Vector v = p - t * normal;
+
+    float aProj = glm::dot(v - o, oa);
+    float bProj = glm::dot(v - o, ob);
+    if (aProj > 0 && aProj < dot(oa, oa) && bProj > 0 && bProj < dot(ob, ob))
+    {
+        pointPair = { p, v };
+        return glm::dot(v - p, v - p);
+    }
+    else
+    {
+        return 1000000;
+    }
 }
 
 
