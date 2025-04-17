@@ -12,7 +12,7 @@ Point sam(const Point& o, const Point& oa, const Point& ob, float u, float v)
 float sample(const Point& o1, const Point& a1, const Point& b1, const Point& o2, const Point& a2, const Point& b2, std::pair<Point, Point>& pointPair)
 {
 	float minDist{ 1000000 };
-	constexpr float interval = 0.005;
+	constexpr float interval = 0.01;
 
 	Vector oa1 = a1 - o1;
 	Vector ob1 = b1 - o1;

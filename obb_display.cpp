@@ -7,8 +7,8 @@
 #include <array>
 #include <string_view>
 
-#define WINDOW_WIDTH 2000.f
-#define WINDOW_HEIGHT 1500.f
+#define WINDOW_WIDTH 1500.f
+#define WINDOW_HEIGHT 1000.f
 #define WINDOW_ASPECT (WINDOW_WIDTH / WINDOW_HEIGHT)
 #define DEBUG_DISTANCE
 #include "OBB.h"
@@ -85,11 +85,11 @@ int main() {
 	applyRotate(a, glm::normalize(Vector{ 1,1,0 }), 20);
 	applyRotate(b, glm::normalize(Vector{ 0,1,3 }), 70);
 
-	std::pair<Point, Point> pointPair;
 	std::pair<Point, Point> pointPair0, pointPair1;
-	float dk = distanceSample(a, b, pointPair);
 	float dSqr0 = distanceRectRect(a, b, pointPair0);
 	float dSqr1 = distanceSAT(a, b, pointPair1);
+	std::pair<Point, Point> pointPair;
+	float dk = distanceSample(a, b, pointPair);
 	std::cout << "MinDistance Sample: " << dk << std::endl;
 	std::cout << "Point 1: " << pointPair.first.x << ", " << pointPair.first.y << ", " << pointPair.first.z << std::endl;
 	std::cout << "Point 2: " << pointPair.second.x << ", " << pointPair.second.y << ", " << pointPair.second.z << std::endl;
