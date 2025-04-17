@@ -2,7 +2,6 @@
 #include "OBB.h"
 #include "Common.h"
 #include <array>
-#define TOL 1e-6
 
 struct ProjectionParam
 {
@@ -29,6 +28,11 @@ bool LT(float a, float b)
 bool EQ(float a, float b)
 {
 	return fabs(a - b) < TOL;
+}
+
+bool NE(float a, float b)
+{
+	return fabs(a - b) >= TOL;
 }
 
 void project(const std::array<Point, 8>& points, const Vector& axis, std::array<ProjectionParam, 8>& params)
@@ -172,9 +176,9 @@ float distanceSAT(const OBB& a, const OBB& b, std::pair<Point, Point>& pointPair
 				std::swap(pointPair.first, pointPair.second);
 				return distSqr;
 			}
-			else if (aPointType == 2 && bPointType == 2)
+			else if (aPointType == 1 && bPointType == 1)
 			{
-				float distSqr = distanceSegmentSegment(aEqualPoints[0], aEqualPoints[1], bEqualPoints[0], bEqualPoints[1], pointPair);
+				float distSqr = glm::dot(pointPair.second - pointPair.first, pointPair.second - pointPair.first);
 				return distSqr;
 			}
 		}

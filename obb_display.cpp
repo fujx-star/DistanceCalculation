@@ -10,7 +10,7 @@
 #define WINDOW_WIDTH 1500.f
 #define WINDOW_HEIGHT 1000.f
 #define WINDOW_ASPECT (WINDOW_WIDTH / WINDOW_HEIGHT)
-#define DEBUG_DISTANCE
+#define DEBUG_DISTANCEx
 #include "OBB.h"
 #include "camera.h" // 包含你的 Camera 类头文件
 #include "RectRect.h"
@@ -34,6 +34,12 @@ bool cameraUpdate{ false };
 float deltaTime{ 0.0f };
 float lastFrame{ 0.0f };
 
+Vector rotation;
+Vector translation;
+bool pauseOutput = false;
+bool keyPressed = false;
+Vector origin{ 8, 4, 4 };
+
 // 绘制OBB
 void drawOBB(const OBB& obb);
 
@@ -42,7 +48,8 @@ void drawCoordinateSystem();
 
 void drawMinDistSegment(const Point& p1, const Point& p2, const Vector& lineColor);
 
-void applyRotate(OBB& obb, const Vector& axis, float angle);
+void applyRotate(OBB& obb);
+void applyTranslate(OBB& obb);
 
 int main() {
 	// 初始化GLFW
@@ -78,27 +85,18 @@ int main() {
 		{1, 2, 4}
 	};
 	OBB b{
-		{8, 1, 1 },
+		origin,
 		{{1, 0, 0}, {0, 1, 0}, {0, 0, 1}},
-		{ 3, 2, 2}
+		{1, 1, 1}
 	};
-	applyRotate(a, glm::normalize(Vector{ 1,1,0 }), 20);
-	applyRotate(b, glm::normalize(Vector{ 0,1,3 }), 70);
 
+
+	//std::pair<Point, Point> pointPair;
+	//float dk = distanceSample(a, b, pointPair);
+	//std::cout << "MinDistance Sample: " << dk << std::endl;
+	//std::cout << "Point 1: " << pointPair.first.x << ", " << pointPair.first.y << ", " << pointPair.first.z << std::endl;
+	//std::cout << "Point 2: " << pointPair.second.x << ", " << pointPair.second.y << ", " << pointPair.second.z << std::endl;
 	std::pair<Point, Point> pointPair0, pointPair1;
-	float dSqr0 = distanceRectRect(a, b, pointPair0);
-	float dSqr1 = distanceSAT(a, b, pointPair1);
-	std::pair<Point, Point> pointPair;
-	float dk = distanceSample(a, b, pointPair);
-	std::cout << "MinDistance Sample: " << dk << std::endl;
-	std::cout << "Point 1: " << pointPair.first.x << ", " << pointPair.first.y << ", " << pointPair.first.z << std::endl;
-	std::cout << "Point 2: " << pointPair.second.x << ", " << pointPair.second.y << ", " << pointPair.second.z << std::endl;
-	std::cout << "MinDistance RectRect: " << sqrt(dSqr0) << std::endl;
-	std::cout << "Point 1: " << pointPair0.first.x << ", " << pointPair0.first.y << ", " << pointPair0.first.z << std::endl;
-	std::cout << "Point 2: " << pointPair0.second.x << ", " << pointPair0.second.y << ", " << pointPair0.second.z << std::endl;
-	std::cout << "MinDistance SAT: " << sqrt(dSqr1) << std::endl;
-	std::cout << "Point 1: " << pointPair1.first.x << ", " << pointPair1.first.y << ", " << pointPair1.first.z << std::endl;
-	std::cout << "Point 2: " << pointPair1.second.x << ", " << pointPair1.second.y << ", " << pointPair1.second.z << std::endl;
 
 	// 渲染循环
 	while (!glfwWindowShouldClose(window)) {
@@ -109,15 +107,17 @@ int main() {
 
 		// 输入处理
 		processInput(window);
+		applyRotate(b);
+		applyTranslate(b);
 
 		// 渲染
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		// 设置投影和视图矩阵
-		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), WINDOW_WIDTH / WINDOW_HEIGHT, 0.1f, 100.0f);
-		//float size{ 10 };
-		//glm::mat4 projection = glm::ortho(-size * WINDOW_ASPECT, size * WINDOW_ASPECT, -size, size, 0.1f, 10000.0f);
+		//glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), WINDOW_WIDTH / WINDOW_HEIGHT, 0.1f, 100.0f);
+		float size{ 10 };
+		glm::mat4 projection = glm::ortho(-size * WINDOW_ASPECT, size * WINDOW_ASPECT, -size, size, 0.1f, 10000.0f);
 		glm::mat4 view = camera.GetViewMatrix();
 
 		// 应用矩阵
@@ -134,9 +134,26 @@ int main() {
 		drawOBB(a);
 		drawOBB(b);
 
+		float d0 = sqrt(distanceRectRect(a, b, pointPair0));
+		float d1 = sqrt(distanceSAT(a, b, pointPair1));
+		if (NE(d0, d1)) {
+			std::cerr << "Assertion failed: distanceRectRect (" << d0 << ") != distanceSAT (" << d1 << ")" << std::endl;
+			assert(EQ(d0, d1)); // 这里的断言只起到终止程序的作用
+		}
+
+		if (!pauseOutput)
+		{
+			std::cout << "MinDistance RectRect: " << d0 << std::endl;
+			std::cout << "Point 1: " << pointPair0.first.x << ", " << pointPair0.first.y << ", " << pointPair0.first.z << std::endl;
+			std::cout << "Point 2: " << pointPair0.second.x << ", " << pointPair0.second.y << ", " << pointPair0.second.z << std::endl;
+			std::cout << "MinDistance SAT: " << d1 << std::endl;
+			std::cout << "Point 1: " << pointPair1.first.x << ", " << pointPair1.first.y << ", " << pointPair1.first.z << std::endl;
+			std::cout << "Point 2: " << pointPair1.second.x << ", " << pointPair1.second.y << ", " << pointPair1.second.z << std::endl;
+		}
+
 		drawMinDistSegment(pointPair0.first, pointPair0.second, { 1.0f, 1.0f, 0.0f });
 		drawMinDistSegment(pointPair1.first, pointPair1.second, { 0.0f, 1.0f, 1.0f });
-		drawMinDistSegment(pointPair.first, pointPair.second, { 0.0f, 1.0f, 0.0f });
+		//drawMinDistSegment(pointPair.first, pointPair.second, { 0.0f, 1.0f, 0.0f });
 
 		// 交换缓冲区和查询事件
 		glfwSwapBuffers(window);
@@ -213,6 +230,42 @@ void processInput(GLFWwindow* window) {
 		camera.ProcessKeyboard(UP, deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
 		camera.ProcessKeyboard(DOWN, deltaTime);
+
+	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) {
+		if (!keyPressed) {
+			pauseOutput = !pauseOutput; 
+			keyPressed = true;
+		}
+	}
+	else if (glfwGetKey(window, GLFW_KEY_E) == GLFW_RELEASE) {
+		keyPressed = false;
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS)
+		rotation.x += cameraSpeed;
+	if (glfwGetKey(window, GLFW_KEY_T) == GLFW_PRESS)
+		rotation.x -= cameraSpeed;
+	if (glfwGetKey(window, GLFW_KEY_Y) == GLFW_PRESS)
+		rotation.y += cameraSpeed;
+	if (glfwGetKey(window, GLFW_KEY_U) == GLFW_PRESS)
+		rotation.y -= cameraSpeed;
+	if (glfwGetKey(window, GLFW_KEY_I) == GLFW_PRESS)
+		rotation.z += cameraSpeed;
+	if (glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS)
+		rotation.z -= cameraSpeed;
+
+	if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS)
+		translation.x += cameraSpeed;
+	if (glfwGetKey(window, GLFW_KEY_G) == GLFW_PRESS)
+		translation.x -= cameraSpeed;
+	if (glfwGetKey(window, GLFW_KEY_H) == GLFW_PRESS)
+		translation.y += cameraSpeed;
+	if (glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS)
+		translation.y -= cameraSpeed;
+	if (glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS)
+		translation.z += cameraSpeed;
+	if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS)
+		translation.z -= cameraSpeed;
 }
 
 void mouse_callback(GLFWwindow* window, double xpos, double ypos)
@@ -257,13 +310,22 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 	glViewport(0, 0, width, height);
 }
 
-void applyRotate(OBB& obb, const Vector& axis, float angle)
+void applyRotate(OBB& obb)
 {
-	float rotationAngleRadians = glm::radians(angle); // 转换为弧度
+	glm::mat4 rotationMatrix = glm::mat4(1.0f); // 单位矩阵
+	rotationMatrix = glm::rotate(rotationMatrix, glm::radians(rotation.x), glm::vec3(1.0f, 0.0f, 0.0f)); // 绕X轴旋转
+	rotationMatrix = glm::rotate(rotationMatrix, glm::radians(rotation.y), glm::vec3(0.0f, 1.0f, 0.0f)); // 绕Y轴旋转
+	rotationMatrix = glm::rotate(rotationMatrix, glm::radians(rotation.z), glm::vec3(0.0f, 0.0f, 1.0f)); // 绕Z轴旋转
 
-	glm::mat4 rotationMatrix = glm::rotate(glm::mat4(1.0f), rotationAngleRadians, axis);
+	//obb.u[0] = Vector(rotationMatrix * glm::vec4(obb.u[0], 0.0f));
+	//obb.u[1] = Vector(rotationMatrix * glm::vec4(obb.u[1], 0.0f));
+	//obb.u[2] = Vector(rotationMatrix * glm::vec4(obb.u[2], 0.0f));
+	obb.u[0] = Vector(rotationMatrix * glm::vec4(1.0f, 0.0f, 0.0f, 0.0f));
+	obb.u[1] = Vector(rotationMatrix * glm::vec4(0.0f, 1.0f, 0.0f, 0.0f));
+	obb.u[2] = Vector(rotationMatrix * glm::vec4(0.0f, 0.0f, 1.0f, 0.0f));
+}
 
-	obb.u[0] = Vector(rotationMatrix * glm::vec4(obb.u[0], 0.0f));
-	obb.u[1] = Vector(rotationMatrix * glm::vec4(obb.u[1], 0.0f));
-	obb.u[2] = Vector(rotationMatrix * glm::vec4(obb.u[2], 0.0f));
+void applyTranslate(OBB& obb)
+{
+	obb.c = translation + origin;
 }

@@ -3,7 +3,8 @@
 #include "Vector.h"
 #include <algorithm>
 
-#define EPSILON 1E-6
+#define EPSILON 1E-4
+#define TOL 1e-4
 
 float distancePointSegment(const Point& p, const Point& a, const Point& b, std::pair<Point, Point>& pointPair) {
     Vector ab = b - a;
