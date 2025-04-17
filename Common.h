@@ -8,7 +8,7 @@
 
 float distancePointSegment(const Point& p, const Point& a, const Point& b, std::pair<Point, Point>& pointPair) {
     Vector ab = b - a;
-    float t = glm::dot(p - a, ab);
+    float t = glm::dot(p - a, ab) / dot(ab, ab);
 
     if (t < 0.0f) t = 0.0f;
     else if (t > 1.0f) t = 1.0f;
@@ -19,11 +19,13 @@ float distancePointSegment(const Point& p, const Point& a, const Point& b, std::
 }
 
 float distancePointRect(const Point& p, const Point& o, const Point& a, const Point& b, std::pair<Point, Point>& pointPair) {
+    float sqrDist = 1000000;
+    
     Vector oa = a - o;
     Vector ob = b - o;
     Vector normal = glm::normalize(glm::cross(oa, ob));
     float d = glm::dot(normal, a);
-    float t = (glm::dot(normal, p) - d);
+    float t = glm::dot(normal, p) - d;
     Point closest = p - t * normal;
 
     float aProj = glm::dot(closest - o, oa);
@@ -35,12 +37,52 @@ float distancePointRect(const Point& p, const Point& o, const Point& a, const Po
     }
     else
     {
-        return 1000000;
+        std::array<std::pair<Point, Point>, 4> segs;
+        segs[0] = { o, a };
+        segs[1] = { a, o + oa + ob };
+        segs[2] = { o + oa + ob, b };
+        segs[3] = { b, o };
+        for (const auto& seg : segs)
+        {
+            std::pair<Point, Point> curPair;
+            float sqrD = distancePointSegment(p, seg.first, seg.second, curPair);
+            if (sqrD < sqrDist)
+            {
+                sqrDist = sqrD;
+                pointPair = curPair;
+            }
+        }
+        return sqrDist;
+    }
+}
+
+float distancePointRect(const Point& p, const Point& p0, const Point& p1, const Point& p2, const Point& p3, std::pair<Point, Point>& pointPair) {
+    Vector ab = p1 - p0;
+    Vector ac = p2 - p0;
+    Vector ad = p3 - p0;
+
+    Vector v0 = glm::cross(ab, ac);
+    Vector v1 = glm::cross(ab, ad);
+    Vector v2 = glm::cross(ac, ad);
+    if (glm::dot(v0, v1) > 0)
+    {
+        if (glm::dot(v0, v2) > 0)
+        {
+            return distancePointRect(p, p0, p1, p3, pointPair);
+        }
+        else
+        {
+            return distancePointRect(p, p0, p1, p2, pointPair);
+        }
+    }
+    else
+    {
+        return distancePointRect(p, p0, p2, p3, pointPair);
     }
 }
 
 
-float distanceSegmentSegment(const Vector& p1, const Vector& q1, const Vector& p2, const Vector& q2, std::pair<Point, Point>& pointPair) {
+float distanceSegmentSegment(const Point& p1, const Point& q1, const Point& p2, const Point& q2, std::pair<Point, Point>& pointPair) {
     Vector d1 = q1 - p1; // Direction vector of segment S1
     Vector d2 = q2 - p2; // Direction vector of segment S2
     Vector r = p1 - p2;
@@ -106,4 +148,38 @@ float distanceSegmentSegment(const Vector& p1, const Vector& q1, const Vector& p
     c2 = p2 + d2 * t;
     pointPair = { c1, c2 };
     return glm::dot(c1 - c2, c1 - c2);
+}
+
+
+float distanceSegmentRect(const Point& p, const Point& q, const Point& a, const Point& b, const Point& c, const Point& d, std::pair<Point, Point>& pointPair) {
+    float sqrDist{ 1000 };
+    
+    std::pair<Point, Point> curPair;
+    float sqrD = distancePointRect(p, a, b, c, d, curPair);
+    if (sqrD < sqrDist)
+    {
+        sqrDist = sqrD;
+        pointPair = curPair;
+    }
+    sqrD = distancePointRect(q, a, b, c, d, curPair);
+    if (sqrD < sqrDist)
+    {
+        sqrDist = sqrD;
+        pointPair = curPair;
+    }
+    std::array<std::pair<Point, Point>, 4> segs;
+    segs[0] = { a, b };
+    segs[1] = { b, c };
+    segs[2] = { c, d };
+    segs[3] = { d, a };
+    for (const auto& seg : segs)
+    {
+        sqrD = distanceSegmentSegment(p, q, seg.first, seg.second, curPair);
+        if (sqrD < sqrDist)
+        {
+            sqrDist = sqrD;
+            pointPair = curPair;
+        }
+    }
+    return sqrDist;
 }
