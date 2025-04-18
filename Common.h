@@ -18,6 +18,7 @@ float distancePointSegment(const Point& p, const Point& a, const Point& b, std::
     return glm::dot(closest - p, closest - p);
 }
 
+__declspec(noinline)
 float distancePointRect(const Point& p, const Point& o, const Point& a, const Point& b, std::pair<Point, Point>& pointPair) {
     float sqrDist = 1000000;
     
@@ -28,8 +29,9 @@ float distancePointRect(const Point& p, const Point& o, const Point& a, const Po
     float t = glm::dot(normal, p) - d;
     Point closest = p - t * normal;
 
-    float aProj = glm::dot(closest - o, oa);
-    float bProj = glm::dot(closest - o, ob);
+    Vector tmp = closest - o;
+    float aProj = glm::dot(tmp, oa);
+    float bProj = glm::dot(tmp, ob);
     if (aProj > 0 && aProj < dot(oa, oa) && bProj > 0 && bProj < dot(ob, ob))
     {
         pointPair = { p, closest };
@@ -37,21 +39,21 @@ float distancePointRect(const Point& p, const Point& o, const Point& a, const Po
     }
     else
     {
-        std::array<std::pair<Point, Point>, 4> segs;
-        segs[0] = { o, a };
-        segs[1] = { a, o + oa + ob };
-        segs[2] = { o + oa + ob, b };
-        segs[3] = { b, o };
-        for (const auto& seg : segs)
-        {
-            std::pair<Point, Point> curPair;
-            float sqrD = distancePointSegment(p, seg.first, seg.second, curPair);
-            if (sqrD < sqrDist)
-            {
-                sqrDist = sqrD;
-                pointPair = curPair;
-            }
-        }
+        //std::array<std::pair<Point, Point>, 4> segs;
+        //segs[0] = { o, a };
+        //segs[1] = { a, o + oa + ob };
+        //segs[2] = { o + oa + ob, b };
+        //segs[3] = { b, o };
+        //for (const auto& seg : segs)
+        //{
+        //    std::pair<Point, Point> curPair;
+        //    float sqrD = distancePointSegment(p, seg.first, seg.second, curPair);
+        //    if (sqrD < sqrDist)
+        //    {
+        //        sqrDist = sqrD;
+        //        pointPair = curPair;
+        //    }
+        //}
         return sqrDist;
     }
 }
@@ -81,7 +83,7 @@ float distancePointRect(const Point& p, const Point& p0, const Point& p1, const 
     }
 }
 
-
+__declspec(noinline)
 float distanceSegmentSegment(const Point& p1, const Point& q1, const Point& p2, const Point& q2, std::pair<Point, Point>& pointPair) {
     Vector d1 = q1 - p1; // Direction vector of segment S1
     Vector d2 = q2 - p2; // Direction vector of segment S2

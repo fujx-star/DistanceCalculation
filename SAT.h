@@ -163,64 +163,65 @@ float distanceSAT(const OBB& a, const OBB& b, std::pair<Point, Point>& pointPair
 		// if point-point or point-edge, calcu min distance and point pair
 		int aPointType = aEqualPoints.size();
 		int bPointType = bEqualPoints.size();
-		if (aPointType == 1)
-		{
-			if (bPointType == 1)
-			{
-				float distSqr = glm::dot(pointPair.second - pointPair.first, pointPair.second - pointPair.first);
-				return distSqr;
-			}
-			else if (bPointType == 2)
-			{
-				float distSqr = distancePointSegment(aEqualPoints[0], bEqualPoints[0], bEqualPoints[1], pointPair);
-				return distSqr;
-			}
-			else
-			{
-				float distSqr = distancePointRect(aEqualPoints[0], bEqualPoints[0], bEqualPoints[1], bEqualPoints[2], bEqualPoints[3], pointPair);
-				return distSqr;
-			}
-		}
-		else if (aPointType == 2)
-		{
-			if (bPointType == 1)
-			{
-				float distSqr = distancePointSegment(bEqualPoints[0], aEqualPoints[0], aEqualPoints[1], pointPair);
-				std::swap(pointPair.first, pointPair.second);
-				return distSqr;
-			}
-			else if (bPointType == 2)
-			{
-				float distSqr = distanceSegmentSegment(aEqualPoints[0], aEqualPoints[1], bEqualPoints[0], bEqualPoints[1], pointPair);
-				return distSqr;
-			}
-			else
-			{
-				// min dist between segment and rect
-				float distSqr = distanceSegmentRect(aEqualPoints[0], aEqualPoints[1], bEqualPoints[0], bEqualPoints[1], bEqualPoints[2], bEqualPoints[3], pointPair);
-				return distSqr;
-			}
-		}
-		else
-		{
-			if (bPointType == 1)
-			{
-				float distSqr = distancePointRect(bEqualPoints[0], aEqualPoints[1], aEqualPoints[2], aEqualPoints[3], pointPair);
-				return distSqr;
-			}
-			else if (bPointType == 2)
-			{
-				// min dist between segment and rect
-				float distSqr = distanceSegmentRect(bEqualPoints[0], bEqualPoints[1], aEqualPoints[0], aEqualPoints[1], aEqualPoints[2], aEqualPoints[3], pointPair);
-				std::swap(pointPair.first, pointPair.second);
-				return distSqr;
-			}
-			else
-			{
-				// min dist between rects
-				return overlapIntervalLen * overlapIntervalLen;
-			}
-		}
+		//if (aPointType == 1)
+		//{
+		//	if (bPointType == 1)
+		//	{
+		//		float distSqr = glm::dot(pointPair.second - pointPair.first, pointPair.second - pointPair.first);
+		//		return distSqr;
+		//	}
+		//	else if (bPointType == 2)
+		//	{
+		//		float distSqr = distancePointSegment(aEqualPoints[0], bEqualPoints[0], bEqualPoints[1], pointPair);
+		//		return distSqr;
+		//	}
+		//	else
+		//	{
+		//		float distSqr = distancePointRect(aEqualPoints[0], bEqualPoints[0], bEqualPoints[1], bEqualPoints[2], bEqualPoints[3], pointPair);
+		//		return distSqr;
+		//	}
+		//}
+		//else if (aPointType == 2)
+		//{
+		//	if (bPointType == 1)
+		//	{
+		//		float distSqr = distancePointSegment(bEqualPoints[0], aEqualPoints[0], aEqualPoints[1], pointPair);
+		//		std::swap(pointPair.first, pointPair.second);
+		//		return distSqr;
+		//	}
+		//	else if (bPointType == 2)
+		//	{
+		//		float distSqr = distanceSegmentSegment(aEqualPoints[0], aEqualPoints[1], bEqualPoints[0], bEqualPoints[1], pointPair);
+		//		return distSqr;
+		//	}
+		//	else
+		//	{
+		//		// min dist between segment and rect
+		//		float distSqr = distanceSegmentRect(aEqualPoints[0], aEqualPoints[1], bEqualPoints[0], bEqualPoints[1], bEqualPoints[2], bEqualPoints[3], pointPair);
+		//		return distSqr;
+		//	}
+		//}
+		//else
+		//{
+		//	if (bPointType == 1)
+		//	{
+		//		float distSqr = distancePointRect(bEqualPoints[0], aEqualPoints[0], aEqualPoints[1], aEqualPoints[2], aEqualPoints[3], pointPair);
+		//		return distSqr;
+		//	}
+		//	else if (bPointType == 2)
+		//	{
+		//		// min dist between segment and rect
+		//		float distSqr = distanceSegmentRect(bEqualPoints[0], bEqualPoints[1], aEqualPoints[0], aEqualPoints[1], aEqualPoints[2], aEqualPoints[3], pointPair);
+		//		std::swap(pointPair.first, pointPair.second);
+		//		return distSqr;
+		//	}
+		//	else
+		//	{
+		//		// min dist between rects
+		//		return overlapIntervalLen * overlapIntervalLen;
+		//	}
+		//}
+		return overlapIntervalLen * overlapIntervalLen;
 	}
 	else
 	{
