@@ -91,11 +91,11 @@ void applyTranslate(OBB& obb);
 //	};
 //
 //
-//	//std::pair<Point, Point> pointPair;
-//	//float dk = distanceSample(a, b, pointPair);
-//	//std::cout << "MinDistance Sample: " << dk << std::endl;
-//	//std::cout << "Point 1: " << pointPair.first.x << ", " << pointPair.first.y << ", " << pointPair.first.z << std::endl;
-//	//std::cout << "Point 2: " << pointPair.second.x << ", " << pointPair.second.y << ", " << pointPair.second.z << std::endl;
+//	std::pair<Point, Point> pointPair;
+//	float dk = distanceSample(a, b, pointPair);
+//	std::cout << "MinDistance Sample: " << dk << std::endl;
+//	std::cout << "Point 1: " << pointPair.first.x << ", " << pointPair.first.y << ", " << pointPair.first.z << std::endl;
+//	std::cout << "Point 2: " << pointPair.second.x << ", " << pointPair.second.y << ", " << pointPair.second.z << std::endl;
 //	std::pair<Point, Point> pointPair0, pointPair1;
 //
 //	// 渲染循环
@@ -135,11 +135,16 @@ void applyTranslate(OBB& obb);
 //		drawOBB(b);
 //
 //		float d0 = sqrt(distanceRectRect(a, b, pointPair0));
-//		float d1 = sqrt(distanceSAT(a, b, pointPair1));
+//		float d1 = sqrt(distanceRectRect2(a, b, pointPair1));
 //		if (NE(d0, d1)) {
-//			std::cerr << "Assertion failed: distanceRectRect (" << d0 << ") != distanceSAT (" << d1 << ")" << std::endl;
+//			std::cerr << "Assertion failed: distanceRectRect (" << d0 << ") != distanceRectRect2 (" << d1 << ")" << std::endl;
 //			//assert(EQ(d0, d1)); // 这里的断言只起到终止程序的作用
 //		}
+//		//float d1 = sqrt(distanceSAT(a, b, pointPair1));
+//		//if (NE(d0, d1)) {
+//		//	std::cerr << "Assertion failed: distanceRectRect (" << d0 << ") != distanceSAT (" << d1 << ")" << std::endl;
+//		//	//assert(EQ(d0, d1)); // 这里的断言只起到终止程序的作用
+//		//}
 //
 //		if (!pauseOutput)
 //		{
@@ -179,10 +184,29 @@ int main() {
 	applyRotate(a);
 	std::pair<Point, Point> pointPair0;
 	float d0 = 0.0;
-	for (int i = 0; i < 1000000; i++)
+
 	{
-		d0 += i * sqrt(distanceRectRect(a, b, pointPair0));
+		auto start = std::chrono::high_resolution_clock::now();
+		for (int i = 0; i < 1000000; i++)
+		{
+			d0 += i * sqrt(distanceRectRect(a, b, pointPair0));
+		}
+		auto end = std::chrono::high_resolution_clock::now();
+		auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+		std::cout << "distanceRectRect time: " << duration << " ms" << std::endl;
 	}
+
+	{
+		auto start = std::chrono::high_resolution_clock::now();
+		for (int i = 0; i < 1000000; i++)
+		{
+			d0 += i * sqrt(distanceRectRect2(a, b, pointPair0));
+		}
+		auto end = std::chrono::high_resolution_clock::now();
+		auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+		std::cout << "distanceRectRect2 time: " << duration << " ms" << std::endl;
+	}
+
 	return 0;
 }
 
