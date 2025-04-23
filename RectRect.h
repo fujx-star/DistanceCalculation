@@ -161,6 +161,7 @@ float distanceRectRect2(const OBB& a, const OBB& b, std::pair<Point, Point>& poi
 				p,
 				bPoints[faces[i][0]], bPoints[faces[i][1]], bPoints[faces[i][2]],
 				bPoints[faces[i + 1][0]], bPoints[faces[i + 1][1]], bPoints[faces[i + 1][2]],
+				b.u[2 - i / 2],
 				curPair);
 			if (sqrD < sqrDist)
 			{
@@ -177,6 +178,7 @@ float distanceRectRect2(const OBB& a, const OBB& b, std::pair<Point, Point>& poi
 				p,
 				aPoints[faces[i][0]], aPoints[faces[i][1]], aPoints[faces[i][2]],
 				aPoints[faces[i + 1][0]], aPoints[faces[i + 1][1]], aPoints[faces[i + 1][2]],
+				a.u[2 - i / 2],
 				curPair);
 			if (sqrD < sqrDist)
 			{

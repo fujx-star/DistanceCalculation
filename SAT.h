@@ -45,7 +45,7 @@ void project(const std::array<Point, 8>& points, const Vector& axis, std::array<
 	auto cmp = [](const ProjectionParam& p1, const ProjectionParam& p2) -> bool {
 		return p1.value < p2.value;
 		};
-	sort(params.begin(), params.end(), cmp);
+	std::sort(params.begin(), params.end(), cmp);
 }
 
 float overlap(ProjectionInterval&& a, ProjectionInterval&& b)
@@ -125,44 +125,44 @@ float distanceSAT(const OBB& a, const OBB& b, std::pair<Point, Point>& pointPair
 
 	if (axisInd >= 0)
 	{
-		std::array<ProjectionParam, 8> aProj = aProjRes[axisInd];
-		std::array<ProjectionParam, 8> bProj = bProjRes[axisInd];
-		ProjectionInterval aInt = { aProj[0], aProj[7] };
-		ProjectionInterval bInt = { bProj[0], bProj[7] };
+		//std::array<ProjectionParam, 8> aProj = aProjRes[axisInd];
+		//std::array<ProjectionParam, 8> bProj = bProjRes[axisInd];
+		//ProjectionInterval aInt = { aProj[0], aProj[7] };
+		//ProjectionInterval bInt = { bProj[0], bProj[7] };
 
-		std::vector<Point> aEqualPoints, bEqualPoints;
-		if (aInt.start.value >= bInt.end.value)
-		{
-			for (int i = 0; i < 8; i++)
-			{
-				if (EQ(aProjRes[axisInd][i].value, aInt.start.value))
-				{
-					aEqualPoints.push_back(aProjRes[axisInd][i].point);
-				}
-				if (EQ(bProjRes[axisInd][i].value, bInt.end.value))
-				{
-					bEqualPoints.push_back(bProjRes[axisInd][i].point);
-				}
-			}
-		}
-		else
-		{
-			for (int i = 0; i < 8; i++)
-			{
-				if (EQ(aProjRes[axisInd][i].value, aInt.end.value))
-				{
-					aEqualPoints.push_back(aProjRes[axisInd][i].point);
-				}
-				if (EQ(bProjRes[axisInd][i].value, bInt.start.value))
-				{
-					bEqualPoints.push_back(bProjRes[axisInd][i].point);
-				}
-			}
-		}
-		pointPair = { aEqualPoints[0], bEqualPoints[0] };
-		// if point-point or point-edge, calcu min distance and point pair
-		int aPointType = aEqualPoints.size();
-		int bPointType = bEqualPoints.size();
+		//std::vector<Point> aEqualPoints, bEqualPoints;
+		//if (aInt.start.value >= bInt.end.value)
+		//{
+		//	for (int i = 0; i < 8; i++)
+		//	{
+		//		if (EQ(aProjRes[axisInd][i].value, aInt.start.value))
+		//		{
+		//			aEqualPoints.push_back(aProjRes[axisInd][i].point);
+		//		}
+		//		if (EQ(bProjRes[axisInd][i].value, bInt.end.value))
+		//		{
+		//			bEqualPoints.push_back(bProjRes[axisInd][i].point);
+		//		}
+		//	}
+		//}
+		//else
+		//{
+		//	for (int i = 0; i < 8; i++)
+		//	{
+		//		if (EQ(aProjRes[axisInd][i].value, aInt.end.value))
+		//		{
+		//			aEqualPoints.push_back(aProjRes[axisInd][i].point);
+		//		}
+		//		if (EQ(bProjRes[axisInd][i].value, bInt.start.value))
+		//		{
+		//			bEqualPoints.push_back(bProjRes[axisInd][i].point);
+		//		}
+		//	}
+		//}
+		//pointPair = { aEqualPoints[0], bEqualPoints[0] };
+		//// if point-point or point-edge, calcu min distance and point pair
+		//int aPointType = aEqualPoints.size();
+		//int bPointType = bEqualPoints.size();
 		//if (aPointType == 1)
 		//{
 		//	if (bPointType == 1)

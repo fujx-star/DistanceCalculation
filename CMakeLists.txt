@@ -22,3 +22,22 @@ target_link_libraries(rectrect PRIVATE glm)
 target_link_libraries(rectrect PRIVATE glfw)
 target_link_libraries(rectrect PRIVATE glad)
 target_link_libraries(rectrect PRIVATE OpenMP::OpenMP_CXX)
+
+target_compile_options(rectrect PRIVATE
+    $<$<AND:$<CONFIG:Release>,$<CXX_COMPILER_ID:GNU>>:-O3>
+    $<$<AND:$<CONFIG:Release>,$<C_COMPILER_ID:GNU>>:-O3>
+)
+
+#if (MSVC)
+#    target_compile_options(rectrect PRIVATE /O2 /arch:AVX2)
+#endif()
+
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    message(STATUS "Using GCC, enabling -mfma")
+    target_compile_options(rectrect PRIVATE -O3 -mfma -march=native)
+endif()
+
+#target_compile_options(rectrect PRIVATE
+#    $<$<CXX_COMPILER_ID:GNU>:-ffast-math>
+#    $<$<C_COMPILER_ID:GNU>:-ffast-math>
+#)

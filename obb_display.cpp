@@ -16,6 +16,7 @@
 #include "RectRect.h"
 #include "SAT.h"
 #include "sample.h"
+#include "GJK.h"
 
 
 // 回调函数声明
@@ -34,10 +35,11 @@ bool cameraUpdate{ false };
 float deltaTime{ 0.0f };
 float lastFrame{ 0.0f };
 
-Vector rotation{0.1f, 0.2f, 0.3f};
+Vector rotation{0.4f, 0.8f, 0.3f};
 Vector translation;
 bool pauseOutput = false;
 bool keyPressed = false;
+//Vector origin{ 8, -2.37388, 4 };
 Vector origin{ 8, 4, 4 };
 
 // 绘制OBB
@@ -51,125 +53,33 @@ void drawMinDistSegment(const Point& p1, const Point& p2, const Vector& lineColo
 void applyRotate(OBB& obb);
 void applyTranslate(OBB& obb);
 
-//int main() {
-//	// 初始化GLFW
-//	glfwInit();
-//	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-//	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-//	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
-//
-//	// 创建窗口
-//	GLFWwindow* window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "OBB with Coordinate System", NULL, NULL);
-//	if (window == NULL) {
-//		std::cout << "Failed to create GLFW window" << std::endl;
-//		glfwTerminate();
-//		return -1;
-//	}
-//	glfwMakeContextCurrent(window);
-//	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-//	glfwSetCursorPosCallback(window, mouse_callback);
-//	glfwSetScrollCallback(window, scroll_callback);
-//
-//	// 初始化GLAD
-//	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-//		std::cout << "Failed to initialize GLAD" << std::endl;
-//		return -1;
-//	}
-//
-//	// 启用深度测试
-//	glEnable(GL_DEPTH_TEST);
-//
-//	OBB a{
-//		{0, 0, 0},
-//		{{1, 0, 0}, {0, 1, 0}, {0, 0, 1}},
-//		{1, 2, 4}
-//	};
-//	OBB b{
-//		origin,
-//		{{1, 0, 0}, {0, 1, 0}, {0, 0, 1}},
-//		{1, 1, 1}
-//	};
-//
-//
-//	std::pair<Point, Point> pointPair;
-//	float dk = distanceSample(a, b, pointPair);
-//	std::cout << "MinDistance Sample: " << dk << std::endl;
-//	std::cout << "Point 1: " << pointPair.first.x << ", " << pointPair.first.y << ", " << pointPair.first.z << std::endl;
-//	std::cout << "Point 2: " << pointPair.second.x << ", " << pointPair.second.y << ", " << pointPair.second.z << std::endl;
-//	std::pair<Point, Point> pointPair0, pointPair1;
-//
-//	// 渲染循环
-//	while (!glfwWindowShouldClose(window)) {
-//		// 计算deltaTime
-//		float currentFrame = static_cast<float>(glfwGetTime());
-//		deltaTime = currentFrame - lastFrame;
-//		lastFrame = currentFrame;
-//
-//		// 输入处理
-//		processInput(window);
-//		applyRotate(b);
-//		applyTranslate(b);
-//
-//		// 渲染
-//		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-//		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-//
-//		// 设置投影和视图矩阵
-//		//glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), WINDOW_WIDTH / WINDOW_HEIGHT, 0.1f, 100.0f);
-//		float size{ 10 };
-//		glm::mat4 projection = glm::ortho(-size * WINDOW_ASPECT, size * WINDOW_ASPECT, -size, size, 0.1f, 10000.0f);
-//		glm::mat4 view = camera.GetViewMatrix();
-//
-//		// 应用矩阵
-//		glMatrixMode(GL_PROJECTION);
-//		glLoadMatrixf(glm::value_ptr(projection));
-//
-//		glMatrixMode(GL_MODELVIEW);
-//		glLoadMatrixf(glm::value_ptr(view));
-//
-//		// 绘制坐标系
-//		drawCoordinateSystem();
-//
-//		// 绘制OBB
-//		drawOBB(a);
-//		drawOBB(b);
-//
-//		float d0 = sqrt(distanceRectRect(a, b, pointPair0));
-//		float d1 = sqrt(distanceRectRect2(a, b, pointPair1));
-//		if (NE(d0, d1)) {
-//			std::cerr << "Assertion failed: distanceRectRect (" << d0 << ") != distanceRectRect2 (" << d1 << ")" << std::endl;
-//			//assert(EQ(d0, d1)); // 这里的断言只起到终止程序的作用
-//		}
-//		//float d1 = sqrt(distanceSAT(a, b, pointPair1));
-//		//if (NE(d0, d1)) {
-//		//	std::cerr << "Assertion failed: distanceRectRect (" << d0 << ") != distanceSAT (" << d1 << ")" << std::endl;
-//		//	//assert(EQ(d0, d1)); // 这里的断言只起到终止程序的作用
-//		//}
-//
-//		if (!pauseOutput)
-//		{
-//			std::cout << "MinDistance RectRect: " << d0 << std::endl;
-//			std::cout << "Point 1: " << pointPair0.first.x << ", " << pointPair0.first.y << ", " << pointPair0.first.z << std::endl;
-//			std::cout << "Point 2: " << pointPair0.second.x << ", " << pointPair0.second.y << ", " << pointPair0.second.z << std::endl;
-//			std::cout << "MinDistance SAT: " << d1 << std::endl;
-//			std::cout << "Point 1: " << pointPair1.first.x << ", " << pointPair1.first.y << ", " << pointPair1.first.z << std::endl;
-//			std::cout << "Point 2: " << pointPair1.second.x << ", " << pointPair1.second.y << ", " << pointPair1.second.z << std::endl;
-//		}
-//
-//		drawMinDistSegment(pointPair0.first, pointPair0.second, { 1.0f, 1.0f, 0.0f });
-//		drawMinDistSegment(pointPair1.first, pointPair1.second, { 0.0f, 1.0f, 1.0f });
-//		//drawMinDistSegment(pointPair.first, pointPair.second, { 0.0f, 1.0f, 0.0f });
-//
-//		// 交换缓冲区和查询事件
-//		glfwSwapBuffers(window);
-//		glfwPollEvents();
-//	}
-//
-//	glfwTerminate();
-//	return 0;
-//}
-
 int main() {
+	// 初始化GLFW
+	glfwInit();
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
+
+	// 创建窗口
+	GLFWwindow* window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "OBB with Coordinate System", NULL, NULL);
+	if (window == NULL) {
+		std::cout << "Failed to create GLFW window" << std::endl;
+		glfwTerminate();
+		return -1;
+	}
+	glfwMakeContextCurrent(window);
+	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+	glfwSetCursorPosCallback(window, mouse_callback);
+	glfwSetScrollCallback(window, scroll_callback);
+
+	// 初始化GLAD
+	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+		std::cout << "Failed to initialize GLAD" << std::endl;
+		return -1;
+	}
+
+	// 启用深度测试
+	glEnable(GL_DEPTH_TEST);
 
 	OBB a{
 		{0, 0, 0},
@@ -181,34 +91,162 @@ int main() {
 		{{1, 0, 0}, {0, 1, 0}, {0, 0, 1}},
 		{1, 1, 1}
 	};
-	applyRotate(a);
-	std::pair<Point, Point> pointPair0;
-	float d0 = 0.0;
 
-	{
-		auto start = std::chrono::high_resolution_clock::now();
-		for (int i = 0; i < 1000000; i++)
-		{
-			d0 += i * sqrt(distanceRectRect(a, b, pointPair0));
+
+	//std::pair<Point, Point> pointPair;
+	//float dk = distanceSample(a, b, pointPair);
+	//std::cout << "MinDistance Sample: " << dk << std::endl;
+	//std::cout << "Point 1: " << pointPair.first.x << ", " << pointPair.first.y << ", " << pointPair.first.z << std::endl;
+	//std::cout << "Point 2: " << pointPair.second.x << ", " << pointPair.second.y << ", " << pointPair.second.z << std::endl;
+	std::pair<Point, Point> pointPair0, pointPair1;
+
+	// 渲染循环
+	while (!glfwWindowShouldClose(window)) {
+		// 计算deltaTime
+		float currentFrame = static_cast<float>(glfwGetTime());
+		deltaTime = currentFrame - lastFrame;
+		lastFrame = currentFrame;
+
+		// 输入处理
+		processInput(window);
+		applyRotate(b);
+		applyTranslate(b);
+		//b.c.y = b.c.y - 0.0001f;
+
+		// 渲染
+		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		// 设置投影和视图矩阵
+		//glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), WINDOW_WIDTH / WINDOW_HEIGHT, 0.1f, 100.0f);
+		float size{ 10 };
+		glm::mat4 projection = glm::ortho(-size * WINDOW_ASPECT, size * WINDOW_ASPECT, -size, size, 0.1f, 10000.0f);
+		glm::mat4 view = camera.GetViewMatrix();
+
+		// 应用矩阵
+		glMatrixMode(GL_PROJECTION);
+		glLoadMatrixf(glm::value_ptr(projection));
+
+		glMatrixMode(GL_MODELVIEW);
+		glLoadMatrixf(glm::value_ptr(view));
+
+		// 绘制坐标系
+		drawCoordinateSystem();
+
+		// 绘制OBB
+		drawOBB(a);
+		drawOBB(b);
+
+		float d0 = sqrt(distanceRectRect(a, b, pointPair0));
+		//float d1 = sqrt(distanceRectRect2(a, b, pointPair1));
+		float d1 = distanceGJK(a, b, pointPair1);
+		if (NE(d0, d1)) {
+			std::cerr << "Assertion failed: distanceRectRect (" << d0 << ") != distanceRectRect2 (" << d1 << ")" << std::endl;
+			//assert(EQ(d0, d1)); // 这里的断言只起到终止程序的作用
 		}
-		auto end = std::chrono::high_resolution_clock::now();
-		auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
-		std::cout << "distanceRectRect time: " << duration << " ms" << std::endl;
+		//float d1 = sqrt(distanceSAT(a, b, pointPair1));
+		//if (NE(d0, d1)) {
+		//	std::cerr << "Assertion failed: distanceRectRect (" << d0 << ") != distanceSAT (" << d1 << ")" << std::endl;
+		//	//assert(EQ(d0, d1)); // 这里的断言只起到终止程序的作用
+		//}
+
+		if (!pauseOutput)
+		{
+			std::cout << "MinDistance RectRect: " << d0 << std::endl;
+			std::cout << "Point 1: " << pointPair0.first.x << ", " << pointPair0.first.y << ", " << pointPair0.first.z << std::endl;
+			std::cout << "Point 2: " << pointPair0.second.x << ", " << pointPair0.second.y << ", " << pointPair0.second.z << std::endl;
+			std::cout << "MinDistance GJK: " << d1 << std::endl;
+			std::cout << "Point 1: " << pointPair1.first.x << ", " << pointPair1.first.y << ", " << pointPair1.first.z << std::endl;
+			std::cout << "Point 2: " << pointPair1.second.x << ", " << pointPair1.second.y << ", " << pointPair1.second.z << std::endl;
+			std::cout << b.c.x << ", " << b.c.y << ", " << b.c.z << std::endl;
+		}
+
+		drawMinDistSegment(pointPair0.first, pointPair0.second, { 1.0f, 1.0f, 0.0f });
+		drawMinDistSegment(pointPair1.first, pointPair1.second, { 0.0f, 1.0f, 1.0f });
+		//drawMinDistSegment(pointPair.first, pointPair.second, { 0.0f, 1.0f, 0.0f });
+
+		// 交换缓冲区和查询事件
+		glfwSwapBuffers(window);
+		glfwPollEvents();
 	}
 
-	{
-		auto start = std::chrono::high_resolution_clock::now();
-		for (int i = 0; i < 1000000; i++)
-		{
-			d0 += i * sqrt(distanceRectRect2(a, b, pointPair0));
-		}
-		auto end = std::chrono::high_resolution_clock::now();
-		auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
-		std::cout << "distanceRectRect2 time: " << duration << " ms" << std::endl;
-	}
-
+	glfwTerminate();
 	return 0;
 }
+
+//int main() {
+//
+//	OBB a{
+//		{0, 0, 0},
+//		{{1, 0, 0}, {0, 1, 0}, {0, 0, 1}},
+//		{1, 2, 4}
+//	};
+//	applyRotate(a);
+//	//for (int i = 0; i < 8; i++)
+//	//{
+//	//	auto p = a.getPoint(i);
+//	//	std::cout << "[" << p.x << ", " << p.y << ", " << p.z << "]," << std::endl;
+//	//}
+//	OBB b{
+//		origin,
+//		{{1, 0, 0}, {0, 1, 0}, {0, 0, 1}},
+//		{1, 1, 1}
+//	};
+//	//for (int i = 0; i < 8; i++)
+//	//{
+//	//	auto p = b.getPoint(i);
+//	//	std::cout << "[" << p.x << ", " << p.y << ", " << p.z << "]," << std::endl;
+//	//}
+//	std::pair<Point, Point> pointPair0;
+//	float d0 = 0.0;
+//
+//	//{
+//	//	auto start = std::chrono::high_resolution_clock::now();
+//	//	for (int i = 0; i < 1000000; i++)
+//	//	{
+//	//		d0 += i * sqrt(distanceRectRect(a, b, pointPair0));
+//	//	}
+//	//	auto end = std::chrono::high_resolution_clock::now();
+//	//	auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+//	//	std::cout << "distanceRectRect time: " << duration << " ms" << std::endl;
+//	//}
+//
+//	//{
+//	//	auto start = std::chrono::high_resolution_clock::now();
+//	//	for (int i = 0; i < 10000000; i++)
+//	//	{
+//	//		d0 += i * sqrt(distanceSAT(a, b, pointPair0));
+//	//	}
+//	//	auto end = std::chrono::high_resolution_clock::now();
+//	//	auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+//	//	std::cout << "distanceSAT time: " << duration << " ms" << std::endl;
+//	//}
+//
+//	//{
+//	//	auto start = std::chrono::high_resolution_clock::now();
+//	//	for (int i = 0; i < 10000000; i++)
+//	//	{
+//	//		d0 += i * sqrt(distanceRectRect2(a, b, pointPair0));
+//	//	}
+//	//	auto end = std::chrono::high_resolution_clock::now();
+//	//	auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+//	//	std::cout << "distanceRectRect2 time: " << duration << " ms" << std::endl;
+//	//}
+//
+//
+//	{
+//		auto start = std::chrono::high_resolution_clock::now();
+//		for (int i = 0; i < 10000000; i++)
+//		{
+//			d0 += i * sqrt(distanceGJK(a, b, pointPair0));
+//		}
+//		auto end = std::chrono::high_resolution_clock::now();
+//		auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+//		std::cout << "distanceGJK time: " << duration << " ms" << std::endl;
+//	}
+//
+//	return 0;
+//}
 
 void drawOBB(const OBB& obb) {
 	// 获取OBB的8个顶点
