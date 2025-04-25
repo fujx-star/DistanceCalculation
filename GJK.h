@@ -5,10 +5,11 @@
 #include <limits>
 #include <iostream>
 #include <iomanip>
+#include "Matrix.h"
 
-Vector matmul(const std::vector<float>& Lambda, const std::vector<Point>& W)
+Vector matmul(const std::vector<Real>& Lambda, const std::vector<Point>& W)
 {
-	glm::vec3 res(0.0f);
+	Vector res(0.0f);
 	for (int i = 0; i < 3; i++)
 	{
 		for (int k = 0; k < Lambda.size(); k++)
@@ -19,14 +20,14 @@ Vector matmul(const std::vector<float>& Lambda, const std::vector<Point>& W)
 	return res;
 }
 
-std::pair<Point, float> supportFunc(const OBB& obb, const Vector& dir)
+std::pair<Point, Real> supportFunc(const OBB& obb, const Vector& dir)
 {
-	float d = std::numeric_limits<float>::lowest();
+	Real d = std::numeric_limits<Real>::lowest();
 	Point res;
 	for (int i = 0; i < 8; i++)
 	{
 		Point p = obb.getPoint(i);
-		float dt = glm::dot(dir, p);
+		Real dt = glm::dot(dir, p);
 		if (dt > d)
 		{
 			d = dt;
@@ -36,25 +37,28 @@ std::pair<Point, float> supportFunc(const OBB& obb, const Vector& dir)
 	return { res, d };
 }
 
-std::pair<Point, float> supportMinkowskiDiff(const OBB& a, const OBB& b, const Vector& dir)
+std::pair<Point, Real> supportMinkowskiDiff(const OBB& a, const OBB& b, const Vector& dir)
 {
 	auto [p1, dist1] = supportFunc(a, dir);
 	auto [p2, dist2] = supportFunc(b, -dir);
 	return { p1 - p2, dist1 + dist2 };
 }
 
-std::pair<std::vector<glm::vec3>, std::vector<float>> S1D(const std::vector<glm::vec3>& simplex) {
+std::pair<std::vector<Vector>, std::vector<Real>> S1D(const std::vector<Vector>& simplex) {
+
+	//printf("-----------S1D start-----------\n");
+
 	if (glm::all(glm::equal(simplex[1], simplex[0]))) {
 		return { { simplex[1] }, {1.0f} };
 	}
 
-	glm::vec3 t = simplex[1] - simplex[0];
-	glm::vec3 po = -glm::dot(simplex[1], t) / glm::dot(t, t) * t + simplex[1];
-	float u_max = 0.0f;
+	Vector t = simplex[1] - simplex[0];
+	Vector po = -glm::dot(simplex[1], t) / glm::dot(t, t) * t + simplex[1];
+	Real u_max = 0.0f;
 	int Index = 0;
 
 	for (int i = 0; i < 3; ++i) {
-		float u = simplex[0][i] - simplex[1][i];
+		Real u = simplex[0][i] - simplex[1][i];
 		if (std::abs(u) > std::abs(u_max)) {
 			u_max = u;
 			Index = i;
@@ -63,13 +67,13 @@ std::pair<std::vector<glm::vec3>, std::vector<float>> S1D(const std::vector<glm:
 
 	glm::vec2 C2(0.0f);
 	for (int j = 0; j < 2; ++j) {
-		float sign = ((j + 1) % 2 == 0) ? 1.0f : -1.0f;
+		Real sign = ((j + 1) % 2 == 0) ? 1.0f : -1.0f;
 		C2[j] = sign * (simplex[(j + 1) % 2][Index] - po[Index]);
 	}
 
 	if ((u_max > 0 && glm::all(glm::greaterThan(C2, glm::vec2(0.0f)))) ||
 		(u_max < 0 && glm::all(glm::lessThan(C2, glm::vec2(0.0f))))) {
-		std::pair<std::vector<glm::vec3>, glm::vec3> res;
+		std::pair<std::vector<Vector>, Vector> res;
 		return { simplex, {C2[0] / u_max, C2[1] / u_max} };
 	}
 	else {
@@ -83,15 +87,18 @@ std::pair<std::vector<glm::vec3>, std::vector<float>> S1D(const std::vector<glm:
 }
 
 
-std::pair<std::vector<glm::vec3>, std::vector<float>> S2D(const std::vector<glm::vec3>& simplex) {
-	glm::vec3 n = glm::cross(simplex[1] - simplex[0], simplex[2] - simplex[0]);
-	glm::vec3 po = (glm::dot(simplex[0], n) / glm::dot(n, n)) * n;
+std::pair<std::vector<Vector>, std::vector<Real>> S2D(const std::vector<Vector>& simplex) {
+	//printf("-----------S2D start-----------\n");
 
-	float u_max = 0.0f;
+
+	Vector n = glm::cross(simplex[1] - simplex[0], simplex[2] - simplex[0]);
+	Vector po = (glm::dot(simplex[0], n) / glm::dot(n, n)) * n;
+
+	Real u_max = 0.0f;
 	int J = 0;
 	for (int i = 0; i < 3; ++i) {
-		float sign = (i % 2 == 0) ? 1.0f : -1.0f;
-		float u = sign * (
+		Real sign = (i % 2 == 0) ? 1.0f : -1.0f;
+		Real u = sign * (
 			simplex[0][(i + 1) % 3] * simplex[1][(i + 2) % 3] +
 			simplex[1][(i + 1) % 3] * simplex[2][(i + 2) % 3] +
 			simplex[2][(i + 1) % 3] * simplex[0][(i + 2) % 3] -
@@ -110,10 +117,10 @@ std::pair<std::vector<glm::vec3>, std::vector<float>> S2D(const std::vector<glm:
 	int x = indices[0];
 	int y = indices[1];
 
-	glm::vec3 C3(0.0f);
-	//std::array<float, 3> poXsimpY;
-	//std::array<float, 3> poYsimpX;
-	//std::array<std::array<float, 2>, 3> simpXsimpY;
+	Vector C3(0.0f);
+	//std::array<Real, 3> poXsimpY;
+	//std::array<Real, 3> poYsimpX;
+	//std::array<std::array<Real, 2>, 3> simpXsimpY;
 	//for (int i = 0; i < 3; ++i) {
 	//	poXsimpY[i] = (po[x] * simplex[i][y]);
 	//	poYsimpX[i] = (po[y] * simplex[i][x]);
@@ -139,24 +146,24 @@ std::pair<std::vector<glm::vec3>, std::vector<float>> S2D(const std::vector<glm:
 		//	);
 	}
 
-	if ((u_max > 0 && glm::all(glm::greaterThan(C3, glm::vec3(0.0f)))) ||
-		(u_max < 0 && glm::all(glm::lessThan(C3, glm::vec3(0.0f))))) {
-		float tmpr = 1.0f / u_max;
+	if ((u_max > 0 && glm::all(glm::greaterThan(C3, Vector(0.0f)))) ||
+		(u_max < 0 && glm::all(glm::lessThan(C3, Vector(0.0f))))) {
+		Real tmpr = 1.0f / u_max;
 		return { simplex, {C3[0] * tmpr, C3[1] * tmpr, C3[2] * tmpr } };
 	}
 
-	float d = std::numeric_limits<float>::max();
-	std::vector<glm::vec3> W;
-	std::vector<float> Lambda;
+	Real d = std::numeric_limits<Real>::max();
+	std::vector<Vector> W;
+	std::vector<Real> Lambda;
 
 	for (int j = 0; j < 3; ++j) {
 		if ((u_max >= 0 && -C3[j] >= 0) || (u_max <= 0 && -C3[j] <= 0)) {
-			std::vector<glm::vec3> simplex1D = simplex;
+			std::vector<Vector> simplex1D = simplex;
 			simplex1D.erase(simplex1D.begin() + j);
 
 			auto [W_astrix, Lambda_astrix] = S1D(simplex1D);
-			glm::vec3 closestVector = matmul(Lambda_astrix, W_astrix);
-			float d_astrix = glm::length(closestVector);
+			Vector closestVector = matmul(Lambda_astrix, W_astrix);
+			Real d_astrix = glm::length(closestVector);
 			if (d_astrix < d) {
 				W = W_astrix;
 				Lambda = Lambda_astrix;
@@ -168,53 +175,56 @@ std::pair<std::vector<glm::vec3>, std::vector<float>> S2D(const std::vector<glm:
 	return { W, Lambda };
 }
 
-std::pair<std::vector<glm::vec3>, std::vector<float>> S3D(const std::vector<Point>& simplex) {
-	glm::mat4 M(1.0f);
+std::pair<std::vector<Vector>, std::vector<Real>> S3D(const std::vector<Point>& simplex) {
+	//printf("-----------S3D start-----------\n");
+
+
+	Matrix4 M(1.0f);
 	for (int i = 0; i < 4; ++i) {
-		M[i] = glm::vec4(simplex[i], 1.0f);
+		M[i] = Vector4(simplex[i], 1.0f);
 	}
 
-	float detM = 0.0f;
-	glm::vec4 C4(0.0f);
+	Real detM = 0.0f;
+	Vector4 C4(0.0f);
 
 	// 代数余子式
 	for (int j = 0; j < 4; ++j) {
-		glm::mat3 minorMat;
+		Matrix3 minorMat;
 		int colIndex = 0;
 
 		for (int col = 0; col < 4; ++col) {
 			if (col == j) continue;  // skip the j-th column
 
 			// Copy first 3 rows of this column into minorMat
-			minorMat[0][colIndex] = M[0][col];
-			minorMat[1][colIndex] = M[1][col];
-			minorMat[2][colIndex] = M[2][col];
+			minorMat[colIndex][0] = M[col][0];
+			minorMat[colIndex][1] = M[col][1];
+			minorMat[colIndex][2] = M[col][2];
 			colIndex++;
 		}
 
-		float sign = ((j + 1 + 4) % 2 == 0) ? 1.0f : -1.0f;
+		Real sign = ((j + 1 + 4) % 2 == 0) ? 1.0f : -1.0f;
 		C4[j] = sign * glm::determinant(minorMat);
 		detM += C4[j];
 	}
 
-	if ((detM > 0 && glm::all(glm::greaterThan(C4, glm::vec4(0.0f)))) ||
-		(detM < 0 && glm::all(glm::lessThan(C4, glm::vec4(0.0f))))) {
-		float detMr = 1.0f / detM;
+	if ((detM > 0 && glm::all(glm::greaterThan(C4, Vector4(0.0f)))) ||
+		(detM < 0 && glm::all(glm::lessThan(C4, Vector4(0.0f))))) {
+		Real detMr = 1.0f / detM;
 		return { simplex, {C4[0] * detMr, C4[1] * detMr, C4[2] * detMr, C4[3] * detMr} };
 	}
 
-	float d = std::numeric_limits<float>::max();
-	std::vector<glm::vec3> W;
-	std::vector<float> Lambda;
+	Real d = std::numeric_limits<Real>::max();
+	std::vector<Vector> W;
+	std::vector<Real> Lambda;
 
 	for (int j = 0; j < 4; ++j) {
 		if ((detM >= 0 && -C4[j] >= 0) || (detM <= 0 && -C4[j] <= 0)) {
-			std::vector<glm::vec3> simplex2D = simplex;
+			std::vector<Vector> simplex2D = simplex;
 			simplex2D.erase(simplex2D.begin() + j);
 
 			auto [W_astrix, Lambda_astrix] = S2D(simplex2D);
-			glm::vec3 closestVector = matmul(Lambda_astrix, W_astrix);
-			float d_astrix = glm::length(closestVector);
+			Vector closestVector = matmul(Lambda_astrix, W_astrix);
+			Real d_astrix = glm::length(closestVector);
 			if (d_astrix < d) {
 				W = W_astrix;
 				Lambda = Lambda_astrix;
@@ -226,7 +236,7 @@ std::pair<std::vector<glm::vec3>, std::vector<float>> S3D(const std::vector<Poin
 	return { W, Lambda };
 }
 
-std::pair<std::vector<glm::vec3>, std::vector<float>> SignedVolumes(std::vector<Point>& simplex)
+std::pair<std::vector<Vector>, std::vector<Real>> SignedVolumes(std::vector<Point>& simplex)
 {
 	int size = simplex.size();
 	if (size == 4)
@@ -245,7 +255,7 @@ std::pair<std::vector<glm::vec3>, std::vector<float>> SignedVolumes(std::vector<
 }
 
 
-float distanceGJK(const OBB& a, const OBB& b, std::pair<Point, Point>& pointPair)
+Real distanceGJK(const OBB& a, const OBB& b, std::pair<Point, Point>& pointPair)
 {
 	std::cout << std::fixed << std::setprecision(8);
 	//for (int i = 0; i < 8; i++)
@@ -264,20 +274,20 @@ float distanceGJK(const OBB& a, const OBB& b, std::pair<Point, Point>& pointPair
 	Vector dir = a.c - b.c;
 	auto [newPoint, dist] = supportMinkowskiDiff(a, b, -dir);
 
-	std::vector<Point> simplex{ newPoint };
+	std::vector<Point> simplex{ newPoint, dir };
 	int cnt = 0;
 	while (true)
 	{
 		k++;
-		std::pair<std::vector<glm::vec3>, std::vector<float>> result = SignedVolumes(simplex);
+		std::pair<std::vector<Vector>, std::vector<Real>> result = SignedVolumes(simplex);
 		simplex = result.first;
 		auto Lambda = result.second;
 		dir = matmul(Lambda, simplex);
 		//std::cout << "dir : [" << dir.x << ", " << dir.y << ", " << dir.z << "]" << std::endl;
 		auto [newPoint, dist] = supportMinkowskiDiff(a, b, -dir);
-		float vk_square = glm::dot(dir, dir);
+		Real vk_square = glm::dot(dir, dir);
 		//std::cout << simplex.size() << std::endl << vk_square << std::endl;
-		float gk = vk_square + dist;
+		Real gk = vk_square + dist;
 		if (gk < TOL || simplex.size() == 4)
 		{
 			return glm::sqrt(vk_square);

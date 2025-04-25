@@ -3,6 +3,7 @@
 
 CMakeFiles/rectrect.dir/obb_display.cpp.o: /mnt/e/mySAT/DistanceCalculation/obb_display.cpp \
   /mnt/e/mySAT/DistanceCalculation/Common.h \
+  /mnt/e/mySAT/DistanceCalculation/GJK.h \
   /mnt/e/mySAT/DistanceCalculation/OBB.h \
   /mnt/e/mySAT/DistanceCalculation/Point.h \
   /mnt/e/mySAT/DistanceCalculation/RectRect.h \
@@ -231,6 +232,7 @@ CMakeFiles/rectrect.dir/obb_display.cpp.o: /mnt/e/mySAT/DistanceCalculation/obb_
   /usr/include/c++/13/bits/char_traits.h \
   /usr/include/c++/13/bits/charconv.h \
   /usr/include/c++/13/bits/chrono.h \
+  /usr/include/c++/13/bits/codecvt.h \
   /usr/include/c++/13/bits/concept_check.h \
   /usr/include/c++/13/bits/cpp_type_traits.h \
   /usr/include/c++/13/bits/cxxabi_forced.h \
@@ -247,8 +249,11 @@ CMakeFiles/rectrect.dir/obb_display.cpp.o: /mnt/e/mySAT/DistanceCalculation/obb_
   /usr/include/c++/13/bits/iterator_concepts.h \
   /usr/include/c++/13/bits/locale_classes.h \
   /usr/include/c++/13/bits/locale_classes.tcc \
+  /usr/include/c++/13/bits/locale_conv.h \
   /usr/include/c++/13/bits/locale_facets.h \
   /usr/include/c++/13/bits/locale_facets.tcc \
+  /usr/include/c++/13/bits/locale_facets_nonio.h \
+  /usr/include/c++/13/bits/locale_facets_nonio.tcc \
   /usr/include/c++/13/bits/localefwd.h \
   /usr/include/c++/13/bits/max_size_type.h \
   /usr/include/c++/13/bits/memory_resource.h \
@@ -262,6 +267,7 @@ CMakeFiles/rectrect.dir/obb_display.cpp.o: /mnt/e/mySAT/DistanceCalculation/obb_
   /usr/include/c++/13/bits/postypes.h \
   /usr/include/c++/13/bits/predefined_ops.h \
   /usr/include/c++/13/bits/ptr_traits.h \
+  /usr/include/c++/13/bits/quoted_string.h \
   /usr/include/c++/13/bits/range_access.h \
   /usr/include/c++/13/bits/ranges_algo.h \
   /usr/include/c++/13/bits/ranges_algobase.h \
@@ -271,6 +277,7 @@ CMakeFiles/rectrect.dir/obb_display.cpp.o: /mnt/e/mySAT/DistanceCalculation/obb_
   /usr/include/c++/13/bits/refwrap.h \
   /usr/include/c++/13/bits/requires_hosted.h \
   /usr/include/c++/13/bits/specfun.h \
+  /usr/include/c++/13/bits/sstream.tcc \
   /usr/include/c++/13/bits/std_abs.h \
   /usr/include/c++/13/bits/std_mutex.h \
   /usr/include/c++/13/bits/stl_algo.h \
@@ -322,11 +329,13 @@ CMakeFiles/rectrect.dir/obb_display.cpp.o: /mnt/e/mySAT/DistanceCalculation/obb_
   /usr/include/c++/13/ext/string_conversions.h \
   /usr/include/c++/13/ext/type_traits.h \
   /usr/include/c++/13/initializer_list \
+  /usr/include/c++/13/iomanip \
   /usr/include/c++/13/ios \
   /usr/include/c++/13/iosfwd \
   /usr/include/c++/13/iostream \
   /usr/include/c++/13/istream \
   /usr/include/c++/13/limits \
+  /usr/include/c++/13/locale \
   /usr/include/c++/13/mutex \
   /usr/include/c++/13/new \
   /usr/include/c++/13/numbers \
@@ -335,6 +344,7 @@ CMakeFiles/rectrect.dir/obb_display.cpp.o: /mnt/e/mySAT/DistanceCalculation/obb_
   /usr/include/c++/13/pstl/glue_algorithm_defs.h \
   /usr/include/c++/13/pstl/pstl_config.h \
   /usr/include/c++/13/ratio \
+  /usr/include/c++/13/sstream \
   /usr/include/c++/13/stdexcept \
   /usr/include/c++/13/streambuf \
   /usr/include/c++/13/string \
@@ -361,6 +371,7 @@ CMakeFiles/rectrect.dir/obb_display.cpp.o: /mnt/e/mySAT/DistanceCalculation/obb_
   /usr/include/errno.h \
   /usr/include/features-time64.h \
   /usr/include/features.h \
+  /usr/include/libintl.h \
   /usr/include/limits.h \
   /usr/include/linux/errno.h \
   /usr/include/linux/limits.h \
@@ -474,7 +485,9 @@ CMakeFiles/rectrect.dir/obb_display.cpp.o: /mnt/e/mySAT/DistanceCalculation/obb_
   /usr/include/x86_64-linux-gnu/c++/13/bits/error_constants.h \
   /usr/include/x86_64-linux-gnu/c++/13/bits/gthr-default.h \
   /usr/include/x86_64-linux-gnu/c++/13/bits/gthr.h \
+  /usr/include/x86_64-linux-gnu/c++/13/bits/messages_members.h \
   /usr/include/x86_64-linux-gnu/c++/13/bits/os_defines.h \
+  /usr/include/x86_64-linux-gnu/c++/13/bits/time_members.h \
   /usr/include/x86_64-linux-gnu/gnu/stubs-64.h \
   /usr/include/x86_64-linux-gnu/gnu/stubs.h \
   /usr/include/x86_64-linux-gnu/sys/cdefs.h \
@@ -504,7 +517,11 @@ CMakeFiles/rectrect.dir/obb_display.cpp.o: /mnt/e/mySAT/DistanceCalculation/obb_
 
 /usr/include/x86_64-linux-gnu/gnu/stubs-64.h:
 
+/usr/include/x86_64-linux-gnu/c++/13/bits/time_members.h:
+
 /usr/include/x86_64-linux-gnu/c++/13/bits/os_defines.h:
+
+/usr/include/x86_64-linux-gnu/c++/13/bits/messages_members.h:
 
 /usr/include/x86_64-linux-gnu/c++/13/bits/gthr.h:
 
@@ -538,8 +555,6 @@ CMakeFiles/rectrect.dir/obb_display.cpp.o: /mnt/e/mySAT/DistanceCalculation/obb_
 
 /usr/include/x86_64-linux-gnu/bits/types/error_t.h:
 
-/usr/include/x86_64-linux-gnu/bits/types/cookie_io_functions_t.h:
-
 /usr/include/x86_64-linux-gnu/bits/types/__mbstate_t.h:
 
 /usr/include/x86_64-linux-gnu/bits/types/__locale_t.h:
@@ -561,8 +576,6 @@ CMakeFiles/rectrect.dir/obb_display.cpp.o: /mnt/e/mySAT/DistanceCalculation/obb_
 /usr/include/x86_64-linux-gnu/bits/timex.h:
 
 /usr/include/x86_64-linux-gnu/bits/stdio_lim.h:
-
-/usr/include/x86_64-linux-gnu/bits/stdio2.h:
 
 /usr/include/x86_64-linux-gnu/bits/stdio.h:
 
@@ -608,8 +621,6 @@ CMakeFiles/rectrect.dir/obb_display.cpp.o: /mnt/e/mySAT/DistanceCalculation/obb_
 
 /usr/include/wchar.h:
 
-/usr/include/strings.h:
-
 /usr/include/string.h:
 
 /usr/include/stdlib.h:
@@ -621,6 +632,8 @@ CMakeFiles/rectrect.dir/obb_display.cpp.o: /mnt/e/mySAT/DistanceCalculation/obb_
 /usr/include/sched.h:
 
 /usr/include/locale.h:
+
+/usr/include/libintl.h:
 
 /usr/include/errno.h:
 
@@ -646,6 +659,10 @@ CMakeFiles/rectrect.dir/obb_display.cpp.o: /mnt/e/mySAT/DistanceCalculation/obb_
 
 /usr/include/c++/13/stdexcept:
 
+/usr/include/x86_64-linux-gnu/bits/types/cookie_io_functions_t.h:
+
+/usr/include/c++/13/sstream:
+
 /usr/include/linux/limits.h:
 
 /usr/include/c++/13/ratio:
@@ -660,6 +677,8 @@ CMakeFiles/rectrect.dir/obb_display.cpp.o: /mnt/e/mySAT/DistanceCalculation/obb_
 
 /usr/include/c++/13/mutex:
 
+/usr/include/c++/13/locale:
+
 /usr/include/x86_64-linux-gnu/bits/types/wint_t.h:
 
 /usr/include/c++/13/limits:
@@ -669,6 +688,10 @@ CMakeFiles/rectrect.dir/obb_display.cpp.o: /mnt/e/mySAT/DistanceCalculation/obb_
 /usr/include/c++/13/iosfwd:
 
 /usr/include/c++/13/ios:
+
+/usr/include/strings.h:
+
+/usr/include/c++/13/iomanip:
 
 /usr/include/limits.h:
 
@@ -750,6 +773,8 @@ CMakeFiles/rectrect.dir/obb_display.cpp.o: /mnt/e/mySAT/DistanceCalculation/obb_
 
 /usr/include/c++/13/bits/std_mutex.h:
 
+/usr/include/c++/13/bits/sstream.tcc:
+
 /usr/include/c++/13/bits/streambuf.tcc:
 
 /usr/include/c++/13/bits/specfun.h:
@@ -757,6 +782,20 @@ CMakeFiles/rectrect.dir/obb_display.cpp.o: /mnt/e/mySAT/DistanceCalculation/obb_
 /usr/include/x86_64-linux-gnu/bits/floatn-common.h:
 
 /usr/include/c++/13/bits/requires_hosted.h:
+
+/usr/include/c++/13/bits/refwrap.h:
+
+/usr/include/x86_64-linux-gnu/c++/13/bits/ctype_base.h:
+
+/usr/include/c++/13/bits/ranges_util.h:
+
+/usr/lib/gcc/x86_64-linux-gnu/13/include/limits.h:
+
+/usr/include/c++/13/tr1/modified_bessel_func.tcc:
+
+/usr/include/c++/13/bits/ranges_base.h:
+
+/usr/include/c++/13/bits/ranges_algobase.h:
 
 /mnt/e/mySAT/DistanceCalculation/external/glm/glm/ext/vector_int3_sized.hpp:
 
@@ -787,6 +826,8 @@ CMakeFiles/rectrect.dir/obb_display.cpp.o: /mnt/e/mySAT/DistanceCalculation/obb_
 /usr/include/c++/13/type_traits:
 
 /mnt/e/mySAT/DistanceCalculation/external/glm/glm/ext/vector_bool2.hpp:
+
+/usr/include/c++/13/bits/locale_facets_nonio.tcc:
 
 /mnt/e/mySAT/DistanceCalculation/external/glm/glm/ext/matrix_double2x2_precision.hpp:
 
@@ -834,10 +875,6 @@ CMakeFiles/rectrect.dir/obb_display.cpp.o: /mnt/e/mySAT/DistanceCalculation/obb_
 
 /mnt/e/mySAT/DistanceCalculation/external/glm/glm/matrix.hpp:
 
-/mnt/e/mySAT/DistanceCalculation/external/glm/glm/ext/vector_uint4.hpp:
-
-/mnt/e/mySAT/DistanceCalculation/external/glm/glm/vector_relational.hpp:
-
 /mnt/e/mySAT/DistanceCalculation/external/glm/glm/ext/quaternion_double.hpp:
 
 /usr/lib/gcc/x86_64-linux-gnu/13/include/syslimits.h:
@@ -850,8 +887,6 @@ CMakeFiles/rectrect.dir/obb_display.cpp.o: /mnt/e/mySAT/DistanceCalculation/obb_
 
 /mnt/e/mySAT/DistanceCalculation/external/glm/glm/mat4x4.hpp:
 
-/mnt/e/mySAT/DistanceCalculation/external/glm/glm/detail/type_mat3x4.hpp:
-
 /mnt/e/mySAT/DistanceCalculation/external/glm/glm/mat3x4.hpp:
 
 /mnt/e/mySAT/DistanceCalculation/external/glm/glm/ext/scalar_constants.inl:
@@ -859,6 +894,10 @@ CMakeFiles/rectrect.dir/obb_display.cpp.o: /mnt/e/mySAT/DistanceCalculation/obb_
 /mnt/e/mySAT/DistanceCalculation/external/glm/glm/mat3x3.hpp:
 
 /mnt/e/mySAT/DistanceCalculation/external/glm/glm/mat3x2.hpp:
+
+/mnt/e/mySAT/DistanceCalculation/external/glm/glm/detail/type_mat3x4.hpp:
+
+/mnt/e/mySAT/DistanceCalculation/GJK.h:
 
 /usr/include/c++/13/cstddef:
 
@@ -897,14 +936,6 @@ CMakeFiles/rectrect.dir/obb_display.cpp.o: /mnt/e/mySAT/DistanceCalculation/obb_
 /mnt/e/mySAT/DistanceCalculation/external/glm/glm/detail/func_vector_relational.inl:
 
 /mnt/e/mySAT/DistanceCalculation/external/glm/glm/ext/matrix_double2x4.hpp:
-
-/usr/include/c++/13/bits/stl_algo.h:
-
-/mnt/e/mySAT/DistanceCalculation/external/glm/glm/common.hpp:
-
-/usr/include/c++/13/streambuf:
-
-/usr/include/c++/13/bits/memory_resource.h:
 
 /usr/include/c++/13/istream:
 
@@ -958,8 +989,6 @@ CMakeFiles/rectrect.dir/obb_display.cpp.o: /mnt/e/mySAT/DistanceCalculation/obb_
 
 /mnt/e/mySAT/DistanceCalculation/external/glm/glm/ext/matrix_double3x2_precision.hpp:
 
-/mnt/e/mySAT/DistanceCalculation/external/glm/glm/ext/matrix_double2x3_precision.hpp:
-
 /usr/include/c++/13/cerrno:
 
 /mnt/e/mySAT/DistanceCalculation/external/glm/glm/ext/vector_bool4.hpp:
@@ -1004,6 +1033,20 @@ CMakeFiles/rectrect.dir/obb_display.cpp.o: /mnt/e/mySAT/DistanceCalculation/obb_
 
 /usr/include/c++/13/bits/ios_base.h:
 
+/usr/include/c++/13/bits/stl_algo.h:
+
+/mnt/e/mySAT/DistanceCalculation/external/glm/glm/common.hpp:
+
+/usr/include/c++/13/streambuf:
+
+/usr/include/c++/13/bits/memory_resource.h:
+
+/mnt/e/mySAT/DistanceCalculation/external/glm/glm/detail/type_mat4x4.hpp:
+
+/mnt/e/mySAT/DistanceCalculation/external/glm/glm/detail/type_vec3.inl:
+
+/mnt/e/mySAT/DistanceCalculation/external/glm/glm/ext/matrix_transform.inl:
+
 /usr/include/x86_64-linux-gnu/bits/types/__FILE.h:
 
 /usr/include/math.h:
@@ -1046,14 +1089,6 @@ CMakeFiles/rectrect.dir/obb_display.cpp.o: /mnt/e/mySAT/DistanceCalculation/obb_
 
 /mnt/e/mySAT/DistanceCalculation/external/glm/glm/ext/matrix_float2x4.hpp:
 
-/usr/include/c++/13/bits/refwrap.h:
-
-/mnt/e/mySAT/DistanceCalculation/external/glm/glm/detail/type_mat4x4.hpp:
-
-/mnt/e/mySAT/DistanceCalculation/external/glm/glm/detail/type_vec3.inl:
-
-/mnt/e/mySAT/DistanceCalculation/external/glm/glm/ext/matrix_transform.inl:
-
 /mnt/e/mySAT/DistanceCalculation/external/glm/glm/ext/vector_uint2.hpp:
 
 /mnt/e/mySAT/DistanceCalculation/external/glm/glm/ext/matrix_double4x4_precision.hpp:
@@ -1069,6 +1104,8 @@ CMakeFiles/rectrect.dir/obb_display.cpp.o: /mnt/e/mySAT/DistanceCalculation/obb_
 /mnt/e/mySAT/DistanceCalculation/external/glm/glm/ext/matrix_float4x4_precision.hpp:
 
 /mnt/e/mySAT/DistanceCalculation/external/glm/glm/detail/type_mat2x4.inl:
+
+/usr/include/c++/13/bits/codecvt.h:
 
 /mnt/e/mySAT/DistanceCalculation/RectRect.h:
 
@@ -1099,6 +1136,10 @@ CMakeFiles/rectrect.dir/obb_display.cpp.o: /mnt/e/mySAT/DistanceCalculation/obb_
 /mnt/e/mySAT/DistanceCalculation/external/glm/glm/ext/quaternion_common.hpp:
 
 /mnt/e/mySAT/DistanceCalculation/external/glm/glm/mat2x3.hpp:
+
+/mnt/e/mySAT/DistanceCalculation/external/glm/glm/ext/matrix_double2x3_precision.hpp:
+
+/usr/include/c++/13/bits/locale_facets_nonio.h:
 
 /mnt/e/mySAT/DistanceCalculation/external/glm/glm/ext/matrix_float2x3_precision.hpp:
 
@@ -1162,6 +1203,10 @@ CMakeFiles/rectrect.dir/obb_display.cpp.o: /mnt/e/mySAT/DistanceCalculation/obb_
 
 /mnt/e/mySAT/DistanceCalculation/external/glm/glm/ext/vector_float1_precision.hpp:
 
+/usr/include/c++/13/bits/ranges_cmp.h:
+
+/mnt/e/mySAT/DistanceCalculation/external/glm/glm/ext/matrix_float3x2_precision.hpp:
+
 /usr/include/c++/13/bits/basic_ios.h:
 
 /mnt/e/mySAT/DistanceCalculation/external/glad/include/glad/glad.h:
@@ -1179,6 +1224,10 @@ CMakeFiles/rectrect.dir/obb_display.cpp.o: /mnt/e/mySAT/DistanceCalculation/obb_
 /usr/include/c++/13/array:
 
 /mnt/e/mySAT/DistanceCalculation/external/glm/glm/ext/matrix_float4x3_precision.hpp:
+
+/mnt/e/mySAT/DistanceCalculation/external/glm/glm/vector_relational.hpp:
+
+/mnt/e/mySAT/DistanceCalculation/external/glm/glm/ext/vector_uint4.hpp:
 
 /mnt/e/mySAT/DistanceCalculation/external/glm/glm/simd/platform.h:
 
@@ -1233,8 +1282,6 @@ CMakeFiles/rectrect.dir/obb_display.cpp.o: /mnt/e/mySAT/DistanceCalculation/obb_
 /mnt/e/mySAT/DistanceCalculation/external/glm/glm/gtc/constants.inl:
 
 /mnt/e/mySAT/DistanceCalculation/external/glm/glm/ext/matrix_clip_space.inl:
-
-/usr/include/c++/13/bits/istream.tcc:
 
 /usr/include/x86_64-linux-gnu/bits/posix2_lim.h:
 
@@ -1295,10 +1342,6 @@ CMakeFiles/rectrect.dir/obb_display.cpp.o: /mnt/e/mySAT/DistanceCalculation/obb_
 /usr/include/c++/13/bits/stl_iterator_base_funcs.h:
 
 /usr/include/asm-generic/errno-base.h:
-
-/usr/include/x86_64-linux-gnu/c++/13/bits/ctype_base.h:
-
-/usr/include/c++/13/bits/ranges_util.h:
 
 /usr/include/c++/13/bits/hash_bytes.h:
 
@@ -1388,9 +1431,25 @@ CMakeFiles/rectrect.dir/obb_display.cpp.o: /mnt/e/mySAT/DistanceCalculation/obb_
 
 /usr/include/c++/13/bits/functexcept.h:
 
+/usr/include/c++/13/bits/ranges_algo.h:
+
+/mnt/e/mySAT/DistanceCalculation/external/glm/glm/ext/vector_double3_precision.hpp:
+
+/mnt/e/mySAT/DistanceCalculation/external/glm/glm/ext/matrix_double4x3_precision.hpp:
+
+/mnt/e/mySAT/DistanceCalculation/external/glm/glm/ext/matrix_double3x3.hpp:
+
+/mnt/e/mySAT/DistanceCalculation/external/glm/glm/glm.hpp:
+
+/usr/include/c++/13/bits/invoke.h:
+
 /usr/include/c++/13/bits/uniform_int_dist.h:
 
 /usr/include/c++/13/bits/locale_classes.tcc:
+
+/usr/include/c++/13/bits/istream.tcc:
+
+/usr/include/c++/13/bits/locale_conv.h:
 
 /usr/include/c++/13/bits/locale_facets.h:
 
@@ -1412,32 +1471,12 @@ CMakeFiles/rectrect.dir/obb_display.cpp.o: /mnt/e/mySAT/DistanceCalculation/obb_
 
 /usr/include/c++/13/bits/ostream_insert.h:
 
-/mnt/e/mySAT/DistanceCalculation/external/glm/glm/ext/vector_double3_precision.hpp:
-
-/mnt/e/mySAT/DistanceCalculation/external/glm/glm/ext/matrix_double4x3_precision.hpp:
-
-/mnt/e/mySAT/DistanceCalculation/external/glm/glm/ext/matrix_double3x3.hpp:
-
-/mnt/e/mySAT/DistanceCalculation/external/glm/glm/glm.hpp:
-
-/usr/include/c++/13/bits/invoke.h:
-
-/usr/include/c++/13/bits/ranges_algo.h:
-
 /mnt/e/mySAT/DistanceCalculation/external/glm/glm/detail/type_vec2.inl:
 
 /mnt/e/mySAT/DistanceCalculation/external/glm/glm/gtc/epsilon.hpp:
 
 /usr/include/c++/13/bits/predefined_ops.h:
 
-/mnt/e/mySAT/DistanceCalculation/external/glm/glm/ext/matrix_float3x2_precision.hpp:
+/usr/include/x86_64-linux-gnu/bits/stdio2.h:
 
-/usr/include/c++/13/bits/ranges_cmp.h:
-
-/usr/include/c++/13/bits/ranges_algobase.h:
-
-/usr/lib/gcc/x86_64-linux-gnu/13/include/limits.h:
-
-/usr/include/c++/13/tr1/modified_bessel_func.tcc:
-
-/usr/include/c++/13/bits/ranges_base.h:
+/usr/include/c++/13/bits/quoted_string.h:

@@ -11,12 +11,14 @@
 #define WINDOW_HEIGHT 1500.f
 #define WINDOW_ASPECT (WINDOW_WIDTH / WINDOW_HEIGHT)
 #define DEBUG_DISTANCEx
+#define VISUALIZATION
 #include "OBB.h"
 #include "camera.h" // 包含你的 Camera 类头文件
 #include "RectRect.h"
 #include "SAT.h"
 #include "sample.h"
 #include "GJK.h"
+#include "Matrix.h"
 
 
 // 回调函数声明
@@ -26,7 +28,7 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void processInput(GLFWwindow* window);
 
 // 全局变量
-Camera camera(glm::vec3(0.0f, 0.0f, 10.0f));
+Camera camera(Vector(0.0f, 0.0f, 10.0f));
 float lastX = WINDOW_WIDTH / 2.0;
 float lastY = WINDOW_HEIGHT / 2.0;
 bool startPressMouse{ true };
@@ -35,12 +37,12 @@ bool cameraUpdate{ false };
 float deltaTime{ 0.0f };
 float lastFrame{ 0.0f };
 
-Vector rotation{0.4f, 0.8f, 0.3f};
+Vector rotation{ 0.4f, 0.8f, 0.3f };
 Vector translation;
 bool pauseOutput = false;
 bool keyPressed = false;
-//Vector origin{ 8, -2.37388, 4 };
-Vector origin{ 8, 4, 4 };
+Vector origin{ 8, -2.37388, 4 };
+//Vector origin{ 8, 4, 4 };
 
 // 绘制OBB
 void drawOBB(const OBB& obb);
@@ -53,6 +55,7 @@ void drawMinDistSegment(const Point& p1, const Point& p2, const Vector& lineColo
 void applyRotate(OBB& obb);
 void applyTranslate(OBB& obb);
 
+#ifdef VISUALIZATION
 int main() {
 	// 初始化GLFW
 	glfwInit();
@@ -173,80 +176,84 @@ int main() {
 	glfwTerminate();
 	return 0;
 }
+#else
+int main() {
 
-//int main() {
-//
-//	OBB a{
-//		{0, 0, 0},
-//		{{1, 0, 0}, {0, 1, 0}, {0, 0, 1}},
-//		{1, 2, 4}
-//	};
-//	applyRotate(a);
-//	//for (int i = 0; i < 8; i++)
-//	//{
-//	//	auto p = a.getPoint(i);
-//	//	std::cout << "[" << p.x << ", " << p.y << ", " << p.z << "]," << std::endl;
-//	//}
-//	OBB b{
-//		origin,
-//		{{1, 0, 0}, {0, 1, 0}, {0, 0, 1}},
-//		{1, 1, 1}
-//	};
-//	//for (int i = 0; i < 8; i++)
-//	//{
-//	//	auto p = b.getPoint(i);
-//	//	std::cout << "[" << p.x << ", " << p.y << ", " << p.z << "]," << std::endl;
-//	//}
-//	std::pair<Point, Point> pointPair0;
-//	float d0 = 0.0;
-//
-//	//{
-//	//	auto start = std::chrono::high_resolution_clock::now();
-//	//	for (int i = 0; i < 1000000; i++)
-//	//	{
-//	//		d0 += i * sqrt(distanceRectRect(a, b, pointPair0));
-//	//	}
-//	//	auto end = std::chrono::high_resolution_clock::now();
-//	//	auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
-//	//	std::cout << "distanceRectRect time: " << duration << " ms" << std::endl;
-//	//}
-//
-//	//{
-//	//	auto start = std::chrono::high_resolution_clock::now();
-//	//	for (int i = 0; i < 10000000; i++)
-//	//	{
-//	//		d0 += i * sqrt(distanceSAT(a, b, pointPair0));
-//	//	}
-//	//	auto end = std::chrono::high_resolution_clock::now();
-//	//	auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
-//	//	std::cout << "distanceSAT time: " << duration << " ms" << std::endl;
-//	//}
-//
-//	//{
-//	//	auto start = std::chrono::high_resolution_clock::now();
-//	//	for (int i = 0; i < 10000000; i++)
-//	//	{
-//	//		d0 += i * sqrt(distanceRectRect2(a, b, pointPair0));
-//	//	}
-//	//	auto end = std::chrono::high_resolution_clock::now();
-//	//	auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
-//	//	std::cout << "distanceRectRect2 time: " << duration << " ms" << std::endl;
-//	//}
-//
-//
-//	{
-//		auto start = std::chrono::high_resolution_clock::now();
-//		for (int i = 0; i < 10000000; i++)
-//		{
-//			d0 += i * sqrt(distanceGJK(a, b, pointPair0));
-//		}
-//		auto end = std::chrono::high_resolution_clock::now();
-//		auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
-//		std::cout << "distanceGJK time: " << duration << " ms" << std::endl;
-//	}
-//
-//	return 0;
-//}
+	OBB a{
+		{0, 0, 0},
+		{{1, 0, 0}, {0, 1, 0}, {0, 0, 1}},
+		{1, 2, 4}
+	};
+	//for (int i = 0; i < 8; i++)
+	//{
+	//	auto p = a.getPoint(i);
+	//	printf("[%.17lf, %.17lf, %.17lf],\n", p.x, p.y, p.z);
+	//}
+	OBB b{
+		origin,
+		{{1, 0, 0}, {0, 1, 0}, {0, 0, 1}},
+		{1, 1, 1}
+	};
+	applyRotate(b);
+	applyTranslate(b); 
+	//for (int i = 0; i < 8; i++)
+	//{
+	//	auto p = b.getPoint(i);
+	//	printf("[%.17lf, %.17lf, %.17lf],\n", p.x, p.y, p.z);
+	//}
+	std::pair<Point, Point> pointPair0;
+	float d0 = 0.0;
+
+ 	distanceGJK(a, b, pointPair0);
+
+	//{
+	//	auto start = std::chrono::high_resolution_clock::now();
+	//	for (int i = 0; i < 1000000; i++)
+	//	{
+	//		d0 += i * sqrt(distanceRectRect(a, b, pointPair0));
+	//	}
+	//	auto end = std::chrono::high_resolution_clock::now();
+	//	auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+	//	std::cout << "distanceRectRect time: " << duration << " ms" << std::endl;
+	//}
+
+	//{
+	//	auto start = std::chrono::high_resolution_clock::now();
+	//	for (int i = 0; i < 10000000; i++)
+	//	{
+	//		d0 += i * sqrt(distanceSAT(a, b, pointPair0));
+	//	}
+	//	auto end = std::chrono::high_resolution_clock::now();
+	//	auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+	//	std::cout << "distanceSAT time: " << duration << " ms" << std::endl;
+	//}
+
+	//{
+	//	auto start = std::chrono::high_resolution_clock::now();
+	//	for (int i = 0; i < 10000000; i++)
+	//	{
+	//		d0 += i * sqrt(distanceRectRect2(a, b, pointPair0));
+	//	}
+	//	auto end = std::chrono::high_resolution_clock::now();
+	//	auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+	//	std::cout << "distanceRectRect2 time: " << duration << " ms" << std::endl;
+	//}
+
+
+	//{
+	//	auto start = std::chrono::high_resolution_clock::now();
+	//	for (int i = 0; i < 10000000; i++)
+	//	{
+	//		d0 += i * sqrt(distanceGJK(a, b, pointPair0));
+	//	}
+	//	auto end = std::chrono::high_resolution_clock::now();
+	//	auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+	//	std::cout << "distanceGJK time: " << duration << " ms" << std::endl;
+	//}
+
+	return 0;
+}
+#endif
 
 void drawOBB(const OBB& obb) {
 	// 获取OBB的8个顶点
@@ -396,17 +403,17 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 
 void applyRotate(OBB& obb)
 {
-	glm::mat4 rotationMatrix = glm::mat4(1.0f); // 单位矩阵
-	rotationMatrix = glm::rotate(rotationMatrix, glm::radians(rotation.x), glm::vec3(1.0f, 0.0f, 0.0f)); // 绕X轴旋转
-	rotationMatrix = glm::rotate(rotationMatrix, glm::radians(rotation.y), glm::vec3(0.0f, 1.0f, 0.0f)); // 绕Y轴旋转
-	rotationMatrix = glm::rotate(rotationMatrix, glm::radians(rotation.z), glm::vec3(0.0f, 0.0f, 1.0f)); // 绕Z轴旋转
+	Matrix4 rotationMatrix = Matrix4(1.0f); // 单位矩阵
+	rotationMatrix = glm::rotate(rotationMatrix, glm::radians(rotation.x), Vector(1.0f, 0.0f, 0.0f)); // 绕X轴旋转
+	rotationMatrix = glm::rotate(rotationMatrix, glm::radians(rotation.y), Vector(0.0f, 1.0f, 0.0f)); // 绕Y轴旋转
+	rotationMatrix = glm::rotate(rotationMatrix, glm::radians(rotation.z), Vector(0.0f, 0.0f, 1.0f)); // 绕Z轴旋转
 
-	//obb.u[0] = Vector(rotationMatrix * glm::vec4(obb.u[0], 0.0f));
-	//obb.u[1] = Vector(rotationMatrix * glm::vec4(obb.u[1], 0.0f));
-	//obb.u[2] = Vector(rotationMatrix * glm::vec4(obb.u[2], 0.0f));
-	obb.u[0] = Vector(rotationMatrix * glm::vec4(1.0f, 0.0f, 0.0f, 0.0f));
-	obb.u[1] = Vector(rotationMatrix * glm::vec4(0.0f, 1.0f, 0.0f, 0.0f));
-	obb.u[2] = Vector(rotationMatrix * glm::vec4(0.0f, 0.0f, 1.0f, 0.0f));
+	//obb.u[0] = Vector(rotationMatrix * Vector4(obb.u[0], 0.0f));
+	//obb.u[1] = Vector(rotationMatrix * Vector4(obb.u[1], 0.0f));
+	//obb.u[2] = Vector(rotationMatrix * Vector4(obb.u[2], 0.0f));
+	obb.u[0] = Vector(rotationMatrix * Vector4(1.0f, 0.0f, 0.0f, 0.0f));
+	obb.u[1] = Vector(rotationMatrix * Vector4(0.0f, 1.0f, 0.0f, 0.0f));
+	obb.u[2] = Vector(rotationMatrix * Vector4(0.0f, 0.0f, 1.0f, 0.0f));
 }
 
 void applyTranslate(OBB& obb)

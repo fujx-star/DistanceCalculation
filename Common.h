@@ -8,9 +8,9 @@
 #define EPSILON 1E-4
 #define TOL 1e-4
 
-float distancePointSegment(const Point& p, const Point& a, const Point& b, std::pair<Point, Point>& pointPair) {
+Real distancePointSegment(const Point& p, const Point& a, const Point& b, std::pair<Point, Point>& pointPair) {
 	Vector ab = b - a;
-	float t = glm::dot(p - a, ab) / dot(ab, ab);
+	Real t = glm::dot(p - a, ab) / dot(ab, ab);
 
 	if (t < 0.0f) t = 0.0f;
 	else if (t > 1.0f) t = 1.0f;
@@ -21,19 +21,19 @@ float distancePointSegment(const Point& p, const Point& a, const Point& b, std::
 }
 
 //__declspec(noinline)
-float distancePointRect(const Point& p, const Point& o, const Point& a, const Point& b, std::pair<Point, Point>& pointPair) {
-	float sqrDist = 1000000;
+Real distancePointRect(const Point& p, const Point& o, const Point& a, const Point& b, std::pair<Point, Point>& pointPair) {
+	Real sqrDist = 1000000;
 
 	Vector oa = a - o;
 	Vector ob = b - o;
 	Vector normal = glm::normalize(glm::cross(oa, ob));
-	float d = glm::dot(normal, a);
-	float t = glm::dot(normal, p) - d;
+	Real d = glm::dot(normal, a);
+	Real t = glm::dot(normal, p) - d;
 	Point closest = p - t * normal;
 
 	Vector tmp = closest - o;
-	float aProj = glm::dot(tmp, oa);
-	float bProj = glm::dot(tmp, ob);
+	Real aProj = glm::dot(tmp, oa);
+	Real bProj = glm::dot(tmp, ob);
 	if (aProj > 0 && aProj < dot(oa, oa) && bProj > 0 && bProj < dot(ob, ob))
 	{
 		pointPair = { p, closest };
@@ -49,7 +49,7 @@ float distancePointRect(const Point& p, const Point& o, const Point& a, const Po
 		//for (const auto& seg : segs)
 		//{
 		//    std::pair<Point, Point> curPair;
-		//    float sqrD = distancePointSegment(p, seg.first, seg.second, curPair);
+		//    Real sqrD = distancePointSegment(p, seg.first, seg.second, curPair);
 		//    if (sqrD < sqrDist)
 		//    {
 		//        sqrDist = sqrD;
@@ -61,33 +61,33 @@ float distancePointRect(const Point& p, const Point& o, const Point& a, const Po
 }
 
 //__declspec(noinline)
-float distancePointRect2(
+Real distancePointRect2(
 	const Point& p,
 	const Point& o1, const Point& a1, const Point& b1,
 	const Point& o2, const Point& a2, const Point& b2,
 	const Vector& normal,
 	std::pair<Point, Point>& pointPair) {
-	float sqrDist = 1000000;
+	Real sqrDist = 1000000;
 
 	Vector oa = a1 - o1;
 	Vector ob = b1 - o1;
 	//Vector normal = glm::normalize(glm::cross(oa, ob));
-	float pProj = glm::dot(normal, p);
+	Real pProj = glm::dot(normal, p);
 
-	float d1 = glm::dot(normal, a1);
-	float t1 = pProj - d1;
+	Real d1 = glm::dot(normal, a1);
+	Real t1 = pProj - d1;
 	Point closest1 = p - t1 * normal;
 
-	float d2 = glm::dot(normal, a2);
-	float t2 = pProj - d2;
+	Real d2 = glm::dot(normal, a2);
+	Real t2 = pProj - d2;
 	Point closest2 = p - t2 * normal;
 
 	{
 		Vector closestVec = closest1 - o1;
 
-		float aProj = glm::dot(closestVec, oa);
-		float bProj = glm::dot(closestVec, ob);
-		float sqrD = glm::distance2(closest1, p);
+		Real aProj = glm::dot(closestVec, oa);
+		Real bProj = glm::dot(closestVec, ob);
+		Real sqrD = glm::distance2(closest1, p);
 
 		if (aProj > 0 && aProj < dot(oa, oa) && bProj > 0 && bProj < dot(ob, ob) && sqrD < sqrDist)
 		{
@@ -98,9 +98,9 @@ float distancePointRect2(
 	{
 		Vector closestVec = closest2 - o2;
 
-		float aProj = glm::dot(closestVec, oa);
-		float bProj = glm::dot(closestVec, ob);
-		float sqrD = glm::distance2(closest2, p);
+		Real aProj = glm::dot(closestVec, oa);
+		Real bProj = glm::dot(closestVec, ob);
+		Real sqrD = glm::distance2(closest2, p);
 
 		if (aProj > 0 && aProj < dot(oa, oa) && bProj > 0 && bProj < dot(ob, ob) && sqrD < sqrDist)
 		{
@@ -113,7 +113,7 @@ float distancePointRect2(
 }
 
 //__declspec(noinline)
-float distancePointRect(const Point& p, const Point& p0, const Point& p1, const Point& p2, const Point& p3, std::pair<Point, Point>& pointPair) {
+Real distancePointRect(const Point& p, const Point& p0, const Point& p1, const Point& p2, const Point& p3, std::pair<Point, Point>& pointPair) {
 	Vector ab = p1 - p0;
 	Vector ac = p2 - p0;
 	Vector ad = p3 - p0;
@@ -139,16 +139,16 @@ float distancePointRect(const Point& p, const Point& p0, const Point& p1, const 
 }
 
 //__declspec(noinline)
-float distanceSegmentSegment(const Point& p1, const Point& q1, const Point& p2, const Point& q2, std::pair<Point, Point>& pointPair) {
+Real distanceSegmentSegment(const Point& p1, const Point& q1, const Point& p2, const Point& q2, std::pair<Point, Point>& pointPair) {
 	Vector d1 = q1 - p1; // Direction vector of segment S1
 	Vector d2 = q2 - p2; // Direction vector of segment S2
 	Vector r = p1 - p2;
-	float a = glm::dot(d1, d1); // Squared length of segment S1, always nonnegative
-	float e = glm::dot(d2, d2); // Squared length of segment S2, always nonnegative
-	float f = glm::dot(d2, r);
+	Real a = glm::dot(d1, d1); // Squared length of segment S1, always nonnegative
+	Real e = glm::dot(d2, d2); // Squared length of segment S2, always nonnegative
+	Real f = glm::dot(d2, r);
 
 	Point c1, c2;
-	float s, t;
+	Real s, t;
 
 	// Check if either or both segments degenerate into points
 	if (a <= EPSILON && e <= EPSILON) {
@@ -163,24 +163,24 @@ float distanceSegmentSegment(const Point& p1, const Point& q1, const Point& p2, 
 		// First segment degenerates into a point
 		s = 0.0f;
 		t = f / e; // s = 0 => t = (b*s + f) / e = f / e
-		t = std::clamp(t, 0.0f, 1.0f);
+		t = std::clamp<Real>(t, 0.0f, 1.0f);
 	}
 	else {
-		float c = glm::dot(d1, r);
+		Real c = glm::dot(d1, r);
 		if (e <= EPSILON) {
 			// Second segment degenerates into a point
 			t = 0.0f;
-			s = std::clamp(-c / a, 0.0f, 1.0f); // t = 0 => s = (b*t - c) / a = -c / a
+			s = std::clamp<Real>(-c / a, 0.0f, 1.0f); // t = 0 => s = (b*t - c) / a = -c / a
 		}
 		else {
 			// The general nondegenerate case starts here
-			float b = glm::dot(d1, d2);
-			float denom = a * e - b * b; // Always nonnegative
+			Real b = glm::dot(d1, d2);
+			Real denom = a * e - b * b; // Always nonnegative
 
 			// If segments not parallel, compute closest point on L1 to L2, and
 			// clamp to segment S1. Else pick arbitrary s (here 0)
 			if (denom != 0.0f) {
-				s = std::clamp((b * f - c * e) / denom, 0.0f, 1.0f);
+				s = std::clamp<Real>((b * f - c * e) / denom, 0.0f, 1.0f);
 			}
 			else s = 0.0f;
 
@@ -193,11 +193,11 @@ float distanceSegmentSegment(const Point& p1, const Point& q1, const Point& p2, 
 			// and clamp s to [0, 1]
 			if (t < 0.0f) {
 				t = 0.0f;
-				s = std::clamp(-c / a, 0.0f, 1.0f);
+				s = std::clamp<Real>(-c / a, 0.0f, 1.0f);
 			}
 			else if (t > 1.0f) {
 				t = 1.0f;
-				s = std::clamp((b - c) / a, 0.0f, 1.0f);
+				s = std::clamp<Real>((b - c) / a, 0.0f, 1.0f);
 			}
 		}
 	}
@@ -209,24 +209,24 @@ float distanceSegmentSegment(const Point& p1, const Point& q1, const Point& p2, 
 }
 
 //__declspec(noinline)
-float distanceSegment4Segment4(
+Real distanceSegment4Segment4(
 	const std::array<std::pair<Point, Point>, 4>& segsA,
 	const std::array<std::pair<Point, Point>, 4>& segsB,
 	std::pair<Point, Point>& pointPair) {
-	float sqrDist = 1000000;
+	Real sqrDist = 1000000;
 
 	Vector d1 = segsA[0].second - segsA[0].first;
 	Vector d2 = segsB[0].second - segsB[0].first;
-	float a = glm::dot(d1, d1);
-	float e = glm::dot(d2, d2);
-	float b = glm::dot(d1, d2);
-	float denom = a * e - b * b; // Always nonnegative
+	Real a = glm::dot(d1, d1);
+	Real e = glm::dot(d2, d2);
+	Real b = glm::dot(d1, d2);
+	Real denom = a * e - b * b; // Always nonnegative
 
-	float ra = 1.0f / a;
-	float rd = 1.0f / denom;
-	float re = 1 / e;
+	Real ra = 1.0f / a;
+	Real rd = 1.0f / denom;
+	Real re = 1 / e;
 	Point c1, c2;
-	float s, t;
+	Real s, t;
 
 	if (a <= EPSILON && e <= EPSILON) {
 		// Both segments degenerate into points
@@ -240,25 +240,25 @@ float distanceSegment4Segment4(
 		for (int j = 0; j < 4; j++)
 		{
 			Vector r = segsA[i].first - segsB[j].first;
-			float f = glm::dot(d2, r);
+			Real f = glm::dot(d2, r);
 
 			if (a <= EPSILON) {
 				// First segment degenerates into a point
 				s = 0.0f;
 				t = f * re; // s = 0 => t = (b*s + f) / e = f / e
-				t = std::clamp(t, 0.0f, 1.0f);
+				t = std::clamp<Real>(t, 0.0f, 1.0f);
 			}
 			else {
-				float c = glm::dot(d1, r);
+				Real c = glm::dot(d1, r);
 				if (e <= EPSILON) {
 					t = 0.0f;
-					s = std::clamp(-c * ra, 0.0f, 1.0f); // t = 0 => s = (b*t - c) / a = -c / a
+					s = std::clamp<Real>(-c * ra, 0.0f, 1.0f); // t = 0 => s = (b*t - c) / a = -c / a
 				}
 				else {
 					// If segments not parallel, compute closest point on L1 to L2, and
 					// clamp to segment S1. Else pick arbitrary s (here 0)
 					if (denom != 0.0f) [[likely]] {
-						s = std::clamp((b * f - c * e) * rd, 0.0f, 1.0f);
+						s = std::clamp<Real>((b * f - c * e) * rd, 0.0f, 1.0f);
 					}
 					else {
 						s = 0.0f;
@@ -274,18 +274,18 @@ float distanceSegment4Segment4(
 					// and clamp s to [0, 1]
 					if (t < 0.0f) {
 						t = 0.0f;
-						s = std::clamp(-c * ra, 0.0f, 1.0f);
+						s = std::clamp<Real>(-c * ra, 0.0f, 1.0f);
 					}
 					else if (t > 1.0f) {
 						t = 1.0f;
-						s = std::clamp((b - c) * ra, 0.0f, 1.0f);
+						s = std::clamp<Real>((b - c) * ra, 0.0f, 1.0f);
 					}
 				}
 			}
 
 			c1 = segsA[i].first + d1 * s;
 			c2 = segsB[j].first + d2 * t;
-			float sqrD = glm::dot(c1 - c2, c1 - c2);
+			Real sqrD = glm::dot(c1 - c2, c1 - c2);
 			//std::cout << i << " " << j << " : " << sqrD << std::endl;
 			if (sqrD < sqrDist)
 			{
@@ -299,11 +299,11 @@ float distanceSegment4Segment4(
 }
 
 //__declspec(noinline)
-float distanceSegmentRect(const Point& p, const Point& q, const Point& a, const Point& b, const Point& c, const Point& d, std::pair<Point, Point>& pointPair) {
-	float sqrDist{ 1000 };
+Real distanceSegmentRect(const Point& p, const Point& q, const Point& a, const Point& b, const Point& c, const Point& d, std::pair<Point, Point>& pointPair) {
+	Real sqrDist{ 1000 };
 
 	std::pair<Point, Point> curPair;
-	float sqrD = distancePointRect(p, a, b, c, d, curPair);
+	Real sqrD = distancePointRect(p, a, b, c, d, curPair);
 	if (sqrD < sqrDist)
 	{
 		sqrDist = sqrD;

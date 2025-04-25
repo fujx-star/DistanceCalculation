@@ -1,4 +1,4 @@
 #pragma once
-#include <glm/glm.hpp>
+#include "Vector.h"
 
-using Point = glm::vec3;
+using Point = Vector;
