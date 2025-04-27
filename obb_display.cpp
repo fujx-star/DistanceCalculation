@@ -37,7 +37,8 @@ bool cameraUpdate{ false };
 float deltaTime{ 0.0f };
 float lastFrame{ 0.0f };
 
-Vector rotation{ 0.4f, 0.8f, 0.3f };
+//Vector rotation{ 0.4f, 0.8f, 0.3f };
+Vector rotation{ 0.4f, 0.2f, 0.2f };
 Vector translation;
 bool pauseOutput = false;
 bool keyPressed = false;
@@ -184,11 +185,11 @@ int main() {
 		{{1, 0, 0}, {0, 1, 0}, {0, 0, 1}},
 		{1, 2, 4}
 	};
-	//for (int i = 0; i < 8; i++)
-	//{
-	//	auto p = a.getPoint(i);
-	//	printf("[%.17lf, %.17lf, %.17lf],\n", p.x, p.y, p.z);
-	//}
+	for (int i = 0; i < 8; i++)
+	{
+		auto p = a.getPoint(i);
+		printf("[%.17lf, %.17lf, %.17lf],\n", p.x, p.y, p.z);
+	}
 	OBB b{
 		origin,
 		{{1, 0, 0}, {0, 1, 0}, {0, 0, 1}},
@@ -196,15 +197,17 @@ int main() {
 	};
 	applyRotate(b);
 	applyTranslate(b); 
-	//for (int i = 0; i < 8; i++)
-	//{
-	//	auto p = b.getPoint(i);
-	//	printf("[%.17lf, %.17lf, %.17lf],\n", p.x, p.y, p.z);
-	//}
+	for (int i = 0; i < 8; i++)
+	{
+		auto p = b.getPoint(i);
+		printf("[%.17lf, %.17lf, %.17lf],\n", p.x, p.y, p.z);
+	}
 	std::pair<Point, Point> pointPair0;
 	float d0 = 0.0;
 
  	distanceGJK(a, b, pointPair0);
+
+	std::cout << "asdkaskdjaskdj\n";
 
 	//{
 	//	auto start = std::chrono::high_resolution_clock::now();
@@ -228,28 +231,27 @@ int main() {
 	//	std::cout << "distanceSAT time: " << duration << " ms" << std::endl;
 	//}
 
-	//{
-	//	auto start = std::chrono::high_resolution_clock::now();
-	//	for (int i = 0; i < 10000000; i++)
-	//	{
-	//		d0 += i * sqrt(distanceRectRect2(a, b, pointPair0));
-	//	}
-	//	auto end = std::chrono::high_resolution_clock::now();
-	//	auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
-	//	std::cout << "distanceRectRect2 time: " << duration << " ms" << std::endl;
-	//}
+	{
+		auto start = std::chrono::high_resolution_clock::now();
+		for (int i = 0; i < 10000000; i++)
+		{
+			d0 += i * sqrt(distanceRectRect2(a, b, pointPair0));
+		}
+		auto end = std::chrono::high_resolution_clock::now();
+		auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+		std::cout << "distanceRectRect2 time: " << duration << " ms" << std::endl;
+	}
 
-
-	//{
-	//	auto start = std::chrono::high_resolution_clock::now();
-	//	for (int i = 0; i < 10000000; i++)
-	//	{
-	//		d0 += i * sqrt(distanceGJK(a, b, pointPair0));
-	//	}
-	//	auto end = std::chrono::high_resolution_clock::now();
-	//	auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
-	//	std::cout << "distanceGJK time: " << duration << " ms" << std::endl;
-	//}
+	{
+		auto start = std::chrono::high_resolution_clock::now();
+		for (int i = 0; i < 10000000; i++)
+		{
+			d0 += i * sqrt(distanceGJK(a, b, pointPair0));
+		}
+		auto end = std::chrono::high_resolution_clock::now();
+		auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+		std::cout << "distanceGJK time: " << duration << " ms" << std::endl;
+	}
 
 	return 0;
 }
@@ -333,17 +335,17 @@ void processInput(GLFWwindow* window) {
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS)
-		rotation.x += cameraSpeed * 3;
+		rotation.x += cameraSpeed * 5;
 	if (glfwGetKey(window, GLFW_KEY_T) == GLFW_PRESS)
-		rotation.x -= cameraSpeed * 3;
+		rotation.x -= cameraSpeed * 5;
 	if (glfwGetKey(window, GLFW_KEY_Y) == GLFW_PRESS)
-		rotation.y += cameraSpeed * 3;
+		rotation.y += cameraSpeed * 5;
 	if (glfwGetKey(window, GLFW_KEY_U) == GLFW_PRESS)
-		rotation.y -= cameraSpeed * 3;
+		rotation.y -= cameraSpeed * 5;
 	if (glfwGetKey(window, GLFW_KEY_I) == GLFW_PRESS)
-		rotation.z += cameraSpeed * 3;
+		rotation.z += cameraSpeed * 5;
 	if (glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS)
-		rotation.z -= cameraSpeed * 3;
+		rotation.z -= cameraSpeed * 5;
 
 	if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS)
 		translation.x += cameraSpeed;
