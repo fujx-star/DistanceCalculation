@@ -233,12 +233,11 @@ uint32_t S2D(const Point* simplex, Point* newSimplex, Real* newWeights) {
 			Vector closestVector = matmul(newWeight1D, newSimplex1D, size1D);
 			Real d_astrix = glm::length(closestVector);
 			if (d_astrix < d) {
-				newSimplex[0] = newSimplex1D[0];
-				newSimplex[1] = newSimplex1D[1];
-				newSimplex[2] = newSimplex1D[2];
-				newWeights[0] = newWeight1D[0];
-				newWeights[1] = newWeight1D[1];
-				newWeights[2] = newWeight1D[2];
+				for (int i = 0; i < size1D; i++)
+				{
+					newSimplex[i] = newSimplex1D[i];
+					newWeights[i] = newWeight1D[i];
+				}
 				size = size1D;
 				d = d_astrix;
 			}
@@ -317,12 +316,11 @@ uint32_t S3D(const Point* simplex, Point* newSimplex, Real* newWeights) {
 			Vector closestVector = matmul(newWeight2D, newSimplex2D, size2D);
 			Real d_astrix = glm::length(closestVector);
 			if (d_astrix < d) {
-				newSimplex[0] = newSimplex2D[0];
-				newSimplex[1] = newSimplex2D[1];
-				newSimplex[2] = newSimplex2D[2];
-				newWeights[0] = newWeight2D[0];
-				newWeights[1] = newWeight2D[1];
-				newWeights[2] = newWeight2D[2];
+				for (int i = 0; i < size2D; i++)
+				{
+					newSimplex[i] = newSimplex2D[i];
+					newWeights[i] = newWeight2D[i];
+				}
 				size = size2D;
 				d = d_astrix;
 			}
