@@ -353,7 +353,7 @@ uint32_t SignedVolumes(Point* simplex, Point* points, Real* weights, uint32_t& s
 }
 
 
-Real distanceGJK(const OBB& a, const OBB& b, std::pair<Point, Point>& pointPair)
+Real minDistGJK(const OBB& a, const OBB& b, std::pair<Point, Point>& pointPair)
 {
 	Vector dir = a.c - b.c;
 	auto [newPoint, dist] = supportMinkowskiDiff(a, b, -dir);
@@ -375,7 +375,7 @@ Real distanceGJK(const OBB& a, const OBB& b, std::pair<Point, Point>& pointPair)
 		Real gk = vk_square + dist;
 		if (gk < TOL || size == 4)
 		{
-			return glm::sqrt(vk_square);
+			return sqrt(vk_square);
 		}
 
 		memmove(retFirst + 1, retFirst, sizeof(Vector) * (size));
@@ -385,4 +385,45 @@ Real distanceGJK(const OBB& a, const OBB& b, std::pair<Point, Point>& pointPair)
 	}
 
 	return 0.0f;
+}
+
+Real maxDistGJK(const OBB& a, const OBB& b, std::pair<Point, Point>& pointPair)
+{
+	Real sqrDist{ 0 };
+
+	std::array<Point, 8> aPoints = {
+		a.getPoint(0),
+		a.getPoint(1),
+		a.getPoint(2),
+		a.getPoint(3),
+		a.getPoint(4),
+		a.getPoint(5),
+		a.getPoint(6),
+		a.getPoint(7)
+	};
+
+	std::array<Point, 8> bPoints = {
+		b.getPoint(0),
+		b.getPoint(1),
+		b.getPoint(2),
+		b.getPoint(3),
+		b.getPoint(4),
+		b.getPoint(5),
+		b.getPoint(6),
+		b.getPoint(7)
+	};
+
+	for (int i = 0; i < 8; ++i)
+	{
+		for (int j = 0; j < 8; ++j)
+		{
+			Real sqrD = glm::distance2(aPoints[i], bPoints[j]);
+			if (sqrD > sqrDist)
+			{
+				sqrDist = sqrD;
+				pointPair = { aPoints[i], bPoints[j] };
+			}
+		}
+	}
+	return sqrt(sqrDist);
 }

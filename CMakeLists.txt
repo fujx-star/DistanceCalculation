@@ -19,27 +19,27 @@ add_subdirectory(external/glad)
 
 find_package(OpenMP REQUIRED)
 
-add_executable(rectrect obb_display.cpp SAT.h Sample.h RectRect.h Common.h GJK.h Vector.h Matrix.h Real.h)
-target_link_libraries(rectrect PRIVATE glm)
-target_link_libraries(rectrect PRIVATE glfw)
-target_link_libraries(rectrect PRIVATE glad)
-target_link_libraries(rectrect PRIVATE OpenMP::OpenMP_CXX)
+add_executable(distance obb_display.cpp SAT.h Sample.h RectRect.h Common.h GJK.h Vector.h Matrix.h Real.h)
+target_link_libraries(distance PRIVATE glm)
+target_link_libraries(distance PRIVATE glfw)
+target_link_libraries(distance PRIVATE glad)
+target_link_libraries(distance PRIVATE OpenMP::OpenMP_CXX)
 
-target_compile_options(rectrect PRIVATE
+target_compile_options(distance PRIVATE
     $<$<AND:$<CONFIG:Release>,$<CXX_COMPILER_ID:GNU>>:-O3>
     $<$<AND:$<CONFIG:Release>,$<C_COMPILER_ID:GNU>>:-O3>
 )
 
 #if (MSVC)
-#    target_compile_options(rectrect PRIVATE /O2 /arch:AVX2)
+#    target_compile_options(distance PRIVATE /O2 /arch:AVX2)
 #endif()
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     message(STATUS "Using GCC, enabling -mfma")
-    target_compile_options(rectrect PRIVATE -O3 -mfma -march=native)
+    target_compile_options(distance PRIVATE -O3 -mfma -march=native)
 endif()
 
-#target_compile_options(rectrect PRIVATE
+#target_compile_options(distance PRIVATE
 #    $<$<CXX_COMPILER_ID:GNU>:-ffast-math>
 #    $<$<C_COMPILER_ID:GNU>:-ffast-math>
 #)

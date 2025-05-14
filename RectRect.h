@@ -3,7 +3,7 @@
 #include "Common.h"
 #include <array>
 
-float distanceRectRect(const OBB& a, const OBB& b, std::pair<Point, Point>& pointPair) {
+float minDistRectRect(const OBB& a, const OBB& b, std::pair<Point, Point>& pointPair) {
 	float sqrDist{ 1000000 };
 
 	std::array<Point, 8> aPoints = {
@@ -113,11 +113,11 @@ float distanceRectRect(const OBB& a, const OBB& b, std::pair<Point, Point>& poin
 		}
 	}
 
-	return sqrDist;
+	return sqrt(sqrDist);
 }
 
 
-float distanceRectRect2(const OBB& a, const OBB& b, std::pair<Point, Point>& pointPair) {
+float minDistRectRect2(const OBB& a, const OBB& b, std::pair<Point, Point>& pointPair) {
 	float sqrDist{ 1000000 };
 
 	std::array<Point, 8> aPoints = {
@@ -228,5 +228,5 @@ float distanceRectRect2(const OBB& a, const OBB& b, std::pair<Point, Point>& poi
 		}
 	}
 
-	return sqrDist;
+	return sqrt(sqrDist);
 }

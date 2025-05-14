@@ -5,7 +5,7 @@
 
 struct ProjectionParam
 {
-	float value;
+	Real value;
 	Point point;
 };
 
@@ -15,22 +15,22 @@ struct ProjectionInterval
 	ProjectionParam end;
 };
 
-bool GT(float a, float b)
+bool GT(Real a, Real b)
 {
 	return a > b + TOL;
 }
 
-bool LT(float a, float b)
+bool LT(Real a, Real b)
 {
 	return a < b + TOL;
 }
 
-bool EQ(float a, float b)
+bool EQ(Real a, Real b)
 {
 	return fabs(a - b) < TOL;
 }
 
-bool NE(float a, float b)
+bool NE(Real a, Real b)
 {
 	return fabs(a - b) >= TOL;
 }
@@ -48,16 +48,17 @@ void project(const std::array<Point, 8>& points, const Vector& axis, std::array<
 	std::sort(params.begin(), params.end(), cmp);
 }
 
-float overlap(ProjectionInterval&& a, ProjectionInterval&& b)
+// return negative value if no overlap, else return the length of overlap
+Real overlap(ProjectionInterval&& a, ProjectionInterval&& b)
 {
-	float overlapStart = std::max(a.start.value, b.start.value);
-	float overlapEnd = std::min(a.end.value, b.end.value);
+	Real overlapStart = std::max(a.start.value, b.start.value);
+	Real overlapEnd = std::min(a.end.value, b.end.value);
 
 	return overlapEnd - overlapStart;
 }
 
-float distanceSAT(const OBB& a, const OBB& b, std::pair<Point, Point>& pointPair) {
-	float sqrDist{ 1000 };
+Real minDistSAT(const OBB& a, const OBB& b, std::pair<Point, Point>& pointPair) {
+	Real sqrDist{ 1000 };
 
 	std::array<Point, 8> aPoints = {
 		a.getPoint(0),
@@ -100,7 +101,7 @@ float distanceSAT(const OBB& a, const OBB& b, std::pair<Point, Point>& pointPair
 	};
 
 	std::array<std::array<ProjectionParam, 8>, 15> aProjRes, bProjRes;
-	float overlapIntervalLen{ 0 };
+	Real overlapIntervalLen{ 0 };
 	int axisInd{ -1 };
 	for (int i = 0; i < 15; i++)
 	{
@@ -108,8 +109,8 @@ float distanceSAT(const OBB& a, const OBB& b, std::pair<Point, Point>& pointPair
 		project(bPoints, axes[i], bProjRes[i]);
 		auto aProj = aProjRes[i];
 		auto bProj = bProjRes[i];
-		float tmp = overlap(
-			ProjectionInterval{ aProj[0], aProj[7] }, 
+		Real tmp = overlap(
+			ProjectionInterval{ aProj[0], aProj[7] },
 			ProjectionInterval{ bProj[0], bProj[7] }
 		);
 #ifdef DEBUG_DISTANCE
@@ -167,17 +168,17 @@ float distanceSAT(const OBB& a, const OBB& b, std::pair<Point, Point>& pointPair
 		//{
 		//	if (bPointType == 1)
 		//	{
-		//		float distSqr = glm::dot(pointPair.second - pointPair.first, pointPair.second - pointPair.first);
+		//		Real distSqr = glm::dot(pointPair.second - pointPair.first, pointPair.second - pointPair.first);
 		//		return distSqr;
 		//	}
 		//	else if (bPointType == 2)
 		//	{
-		//		float distSqr = distancePointSegment(aEqualPoints[0], bEqualPoints[0], bEqualPoints[1], pointPair);
+		//		Real distSqr = distancePointSegment(aEqualPoints[0], bEqualPoints[0], bEqualPoints[1], pointPair);
 		//		return distSqr;
 		//	}
 		//	else
 		//	{
-		//		float distSqr = distancePointRect(aEqualPoints[0], bEqualPoints[0], bEqualPoints[1], bEqualPoints[2], bEqualPoints[3], pointPair);
+		//		Real distSqr = distancePointRect(aEqualPoints[0], bEqualPoints[0], bEqualPoints[1], bEqualPoints[2], bEqualPoints[3], pointPair);
 		//		return distSqr;
 		//	}
 		//}
@@ -185,19 +186,19 @@ float distanceSAT(const OBB& a, const OBB& b, std::pair<Point, Point>& pointPair
 		//{
 		//	if (bPointType == 1)
 		//	{
-		//		float distSqr = distancePointSegment(bEqualPoints[0], aEqualPoints[0], aEqualPoints[1], pointPair);
+		//		Real distSqr = distancePointSegment(bEqualPoints[0], aEqualPoints[0], aEqualPoints[1], pointPair);
 		//		std::swap(pointPair.first, pointPair.second);
 		//		return distSqr;
 		//	}
 		//	else if (bPointType == 2)
 		//	{
-		//		float distSqr = distanceSegmentSegment(aEqualPoints[0], aEqualPoints[1], bEqualPoints[0], bEqualPoints[1], pointPair);
+		//		Real distSqr = distanceSegmentSegment(aEqualPoints[0], aEqualPoints[1], bEqualPoints[0], bEqualPoints[1], pointPair);
 		//		return distSqr;
 		//	}
 		//	else
 		//	{
 		//		// min dist between segment and rect
-		//		float distSqr = distanceSegmentRect(aEqualPoints[0], aEqualPoints[1], bEqualPoints[0], bEqualPoints[1], bEqualPoints[2], bEqualPoints[3], pointPair);
+		//		Real distSqr = distanceSegmentRect(aEqualPoints[0], aEqualPoints[1], bEqualPoints[0], bEqualPoints[1], bEqualPoints[2], bEqualPoints[3], pointPair);
 		//		return distSqr;
 		//	}
 		//}
@@ -205,13 +206,13 @@ float distanceSAT(const OBB& a, const OBB& b, std::pair<Point, Point>& pointPair
 		//{
 		//	if (bPointType == 1)
 		//	{
-		//		float distSqr = distancePointRect(bEqualPoints[0], aEqualPoints[0], aEqualPoints[1], aEqualPoints[2], aEqualPoints[3], pointPair);
+		//		Real distSqr = distancePointRect(bEqualPoints[0], aEqualPoints[0], aEqualPoints[1], aEqualPoints[2], aEqualPoints[3], pointPair);
 		//		return distSqr;
 		//	}
 		//	else if (bPointType == 2)
 		//	{
 		//		// min dist between segment and rect
-		//		float distSqr = distanceSegmentRect(bEqualPoints[0], bEqualPoints[1], aEqualPoints[0], aEqualPoints[1], aEqualPoints[2], aEqualPoints[3], pointPair);
+		//		Real distSqr = distanceSegmentRect(bEqualPoints[0], bEqualPoints[1], aEqualPoints[0], aEqualPoints[1], aEqualPoints[2], aEqualPoints[3], pointPair);
 		//		std::swap(pointPair.first, pointPair.second);
 		//		return distSqr;
 		//	}
@@ -227,4 +228,153 @@ float distanceSAT(const OBB& a, const OBB& b, std::pair<Point, Point>& pointPair
 	{
 		return 0;
 	}
+}
+
+// if a and b contains each other, then the result is not valid
+Real seperate(ProjectionInterval&& a, ProjectionInterval&& b)
+{
+	bool valid1 = a.start.value < b.start.value;
+	bool valid2 = a.end.value < b.end.value;
+	if (valid1 ^ valid2)
+	{
+		return -1;
+	}
+
+	Real seperateStart = std::min(a.start.value, b.start.value);
+	Real seperateEnd = std::max(a.end.value, b.end.value);
+
+	return seperateEnd - seperateStart;
+}
+
+
+// only consider the case that a and b are not intersected
+Real maxDistSAT(const OBB& a, const OBB& b, std::pair<Point, Point>& pointPair) {
+	Real sqrDist{ 0.0 };
+
+	std::array<Point, 8> aPoints = {
+		a.getPoint(0),
+		a.getPoint(1),
+		a.getPoint(2),
+		a.getPoint(3),
+		a.getPoint(4),
+		a.getPoint(5),
+		a.getPoint(6),
+		a.getPoint(7)
+	};
+
+	std::array<Point, 8> bPoints = {
+		b.getPoint(0),
+		b.getPoint(1),
+		b.getPoint(2),
+		b.getPoint(3),
+		b.getPoint(4),
+		b.getPoint(5),
+		b.getPoint(6),
+		b.getPoint(7)
+	};
+
+	std::array<Vector, 15> axes = {
+		a.u[0],
+		a.u[1],
+		a.u[2],
+		b.u[0],
+		b.u[1],
+		b.u[2],
+		glm::cross(a.u[0], b.u[0]),
+		glm::cross(a.u[0], b.u[1]),
+		glm::cross(a.u[0], b.u[2]),
+		glm::cross(a.u[1], b.u[0]),
+		glm::cross(a.u[1], b.u[1]),
+		glm::cross(a.u[1], b.u[2]),
+		glm::cross(a.u[2], b.u[0]),
+		glm::cross(a.u[2], b.u[1]),
+		glm::cross(a.u[2], b.u[2])
+	};
+
+	std::array<std::array<ProjectionParam, 8>, 15> aProjRes, bProjRes;
+	Real seperateIntervalLen{ 0 };
+	Real overlapIntervalLen{ 0 };
+	int axisInd{ -1 };
+	for (int i = 0; i < 15; i++)
+	{
+		project(aPoints, axes[i], aProjRes[i]);
+		project(bPoints, axes[i], bProjRes[i]);
+		auto aProj = aProjRes[i];
+		auto bProj = bProjRes[i];
+		Real tmp = seperate(
+			ProjectionInterval{ aProj[0], aProj[7] },
+			ProjectionInterval{ bProj[0], bProj[7] }
+		);
+#ifdef DEBUG_DISTANCE
+		std::cout << "SA: (" << axes[i].x << ", " << axes[i].y << ", " << axes[i].z << ") --- aProj: (" << aProj[0].value << ", " << aProj[7].value << "), bProj: (" << bProj[0].value << ", " << bProj[7].value << "), overlap: " << tmp << std::endl;
+#endif
+		if (tmp > seperateIntervalLen)
+		{
+			seperateIntervalLen = tmp;
+			axisInd = i;
+		}
+		tmp = overlap(
+			ProjectionInterval{ aProj[0], aProj[7] },
+			ProjectionInterval{ bProj[0], bProj[7] }
+		);
+		if (tmp < overlapIntervalLen)
+		{
+			overlapIntervalLen = tmp;
+		}
+	}
+
+	// 如果两OBB分离才执行下面的代码
+	if (overlapIntervalLen > 0)
+	{
+		return -1;
+	}
+	std::array<ProjectionParam, 8> aProj = aProjRes[axisInd];
+	std::array<ProjectionParam, 8> bProj = bProjRes[axisInd];
+	ProjectionInterval aInt = { aProj[0], aProj[7] };
+	ProjectionInterval bInt = { bProj[0], bProj[7] };
+
+	std::array<Point, 4> aEqualPoints, bEqualPoints;
+	int aPointNum{ 0 }, bPointNum{ 0 };
+	if (aInt.start.value < bInt.start.value)	// [aStart, bEnd]
+	{
+		for (int i = 0; i < 8; i++)
+		{
+			if (EQ(aProjRes[axisInd][i].value, aInt.start.value))
+			{
+				aEqualPoints[aPointNum++] = aProjRes[axisInd][i].point;
+			}
+			if (EQ(bProjRes[axisInd][i].value, bInt.end.value))
+			{
+				bEqualPoints[bPointNum++] = bProjRes[axisInd][i].point;
+			}
+		}
+	}
+	else	// [bStart, aEnd]
+	{
+		for (int i = 0; i < 8; i++)
+		{
+			if (EQ(aProjRes[axisInd][i].value, aInt.end.value))
+			{
+				aEqualPoints[aPointNum++] = aProjRes[axisInd][i].point;
+			}
+			if (EQ(bProjRes[axisInd][i].value, bInt.start.value))
+			{
+				bEqualPoints[bPointNum++] = bProjRes[axisInd][i].point;
+			}
+		}
+	}
+	Real maxDistSqr{ 0 };
+	for (int i = 0; i < aPointNum; i++)
+	{
+		for (int j = 0; j < bPointNum; j++)
+		{
+			Real sqrD = glm::distance2(aEqualPoints[i], bEqualPoints[j]);
+			if (sqrD > maxDistSqr)
+			{
+				maxDistSqr = sqrD;
+				pointPair = { aEqualPoints[i], bEqualPoints[j] };
+			}
+		}
+	}
+	return sqrt(maxDistSqr);
 }
