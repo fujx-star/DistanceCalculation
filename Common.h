@@ -22,7 +22,6 @@ Real distancePointSegment(const Point& p, const Point& a, const Point& b, std::p
 
 //__declspec(noinline)
 Real distancePointRect(const Point& p, const Point& o, const Point& a, const Point& b, std::pair<Point, Point>& pointPair) {
-	Real sqrDist = 1000000;
 
 	Vector oa = a - o;
 	Vector ob = b - o;
@@ -31,6 +30,7 @@ Real distancePointRect(const Point& p, const Point& o, const Point& a, const Poi
 	Real t = glm::dot(normal, p) - d;
 	Point closest = p - t * normal;
 
+	// closest point is inside the rectangle plane
 	Vector tmp = closest - o;
 	Real aProj = glm::dot(tmp, oa);
 	Real bProj = glm::dot(tmp, ob);
@@ -41,25 +41,23 @@ Real distancePointRect(const Point& p, const Point& o, const Point& a, const Poi
 	}
 	else
 	{
-		//std::array<std::pair<Point, Point>, 4> segs;
-		//segs[0] = { o, a };
-		//segs[1] = { a, o + oa + ob };
-		//segs[2] = { o + oa + ob, b };
-		//segs[3] = { b, o };
-		//for (const auto& seg : segs)
-		//{
-		//    std::pair<Point, Point> curPair;
-		//    Real sqrD = distancePointSegment(p, seg.first, seg.second, curPair);
-		//    if (sqrD < sqrDist)
-		//    {
-		//        sqrDist = sqrD;
-		//        pointPair = curPair;
-		//    }
-		//}
-		return sqrDist;
+		Real oa2 = glm::dot(oa, oa);
+		Real ob2 = glm::dot(ob, ob);
+		Vector tmp = closest - o;
+		Real u = glm::dot(tmp, oa) / oa2;
+		Real v = glm::dot(tmp, ob) / ob2;
+
+		// clamp µ½ [0,1]
+		u = std::clamp<Real>(u, 0.0f, 1.0f);
+		v = std::clamp<Real>(v, 0.0f, 1.0f);
+
+		Point closestNew = o + u * oa + v * ob;
+		pointPair = { p, closestNew };
+		return glm::dot(closestNew - p, closestNew - p);
 	}
 }
 
+// not finished
 //__declspec(noinline)
 Real distancePointRect2(
 	const Point& p,
@@ -71,6 +69,8 @@ Real distancePointRect2(
 
 	Vector oa = a1 - o1;
 	Vector ob = b1 - o1;
+	Real oa2 = glm::dot(oa, oa);
+	Real ob2 = glm::dot(ob, ob);
 	//Vector normal = glm::normalize(glm::cross(oa, ob));
 	Real pProj = glm::dot(normal, p);
 
@@ -94,6 +94,18 @@ Real distancePointRect2(
 			pointPair = { p, closest1 };
 			sqrDist = sqrD;
 		}
+		else
+		{
+			Vector tmp = closest1 - o1;
+			Real s = glm::dot(tmp, oa) / oa2;
+			Real t = glm::dot(tmp, ob) / ob2;
+			s = std::clamp<Real>(s, 0.0f, 1.0f);
+			t = std::clamp<Real>(t, 0.0f, 1.0f);
+
+			Point closest1New = o1 + s * oa + t * ob;
+			pointPair = { p, closest1New };
+			sqrDist += glm::dot(closest1New - closest1, closest1New - closest1);
+		}
 	}
 	{
 		Vector closestVec = closest2 - o2;
@@ -106,6 +118,18 @@ Real distancePointRect2(
 		{
 			pointPair = { p, closest2 };
 			sqrDist = sqrD;
+		}
+		else
+		{
+			Vector tmp = closest2 - o2;
+			Real u = glm::dot(tmp, oa) / oa2;
+			Real v = glm::dot(tmp, ob) / ob2;
+			u = std::clamp<Real>(u, 0.0f, 1.0f);
+			v = std::clamp<Real>(v, 0.0f, 1.0f);
+
+			Point closest2New = o2 + u * oa + v * ob;
+			pointPair = { p, closest2New };
+			sqrDist += glm::dot(closest2New - p, closest2New - closest2);
 		}
 	}
 

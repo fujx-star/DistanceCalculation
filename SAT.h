@@ -89,15 +89,15 @@ Real minDistSAT(const OBB& a, const OBB& b, std::pair<Point, Point>& pointPair) 
 		b.u[0],
 		b.u[1],
 		b.u[2],
-		glm::cross(a.u[0], b.u[0]),
-		glm::cross(a.u[0], b.u[1]),
-		glm::cross(a.u[0], b.u[2]),
-		glm::cross(a.u[1], b.u[0]),
-		glm::cross(a.u[1], b.u[1]),
-		glm::cross(a.u[1], b.u[2]),
-		glm::cross(a.u[2], b.u[0]),
-		glm::cross(a.u[2], b.u[1]),
-		glm::cross(a.u[2], b.u[2])
+		glm::normalize(glm::cross(a.u[0], b.u[0])),
+		glm::normalize(glm::cross(a.u[0], b.u[1])),
+		glm::normalize(glm::cross(a.u[0], b.u[2])),
+		glm::normalize(glm::cross(a.u[1], b.u[0])),
+		glm::normalize(glm::cross(a.u[1], b.u[1])),
+		glm::normalize(glm::cross(a.u[1], b.u[2])),
+		glm::normalize(glm::cross(a.u[2], b.u[0])),
+		glm::normalize(glm::cross(a.u[2], b.u[1])),
+		glm::normalize(glm::cross(a.u[2], b.u[2]))
 	};
 
 	std::array<std::array<ProjectionParam, 8>, 15> aProjRes, bProjRes;
